@@ -27,7 +27,7 @@ const TemperatureLevel: React.FC<TemperatureLevelProps> = ({ temperature, label 
   if (temperature < 25) {
     color = 'bg-blue-500';
   } else if (temperature > 35) {
-    color = 'bg-red-500';
+    color = 'bg-danger';
   } else {
     color = 'bg-green-500'
   }
