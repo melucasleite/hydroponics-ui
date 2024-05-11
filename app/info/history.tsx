@@ -1,23 +1,24 @@
 import React, { useEffect } from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement } from "chart.js";
 import { Line } from "react-chartjs-2";
-import { HIGH_TEMP_THRESHOLD, LOW_TEMP_THRESHOLD } from "../constants";
+import { HIGH_PH_THRESHOLD, HIGH_TEMP_THRESHOLD, LOW_PH_THRESHOLD, LOW_TEMP_THRESHOLD } from "../constants";
 import { getReadings, seedReadings } from "../utils";
 import { Reading } from "@prisma/client";
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement);
 
-type parsedReading = Omit<Reading, 'temperature' | 'id'> & {
+type parsedReading = Omit<Reading, 'temperature' | 'id' | 'ph'> & {
     temperature: number;
+    ph: number;
 };
 
-const TemperatureHistory = () => {
-    const [temperatureData, setTemperatureData] = React.useState<parsedReading[]>([]);
+const HistoryChart = () => {
+    const [readings, setReadings] = React.useState<parsedReading[]>([]);
     const [granularity, setGranularity] = React.useState('second');
 
     const fetchInfo = async () => {
         const data = await getReadings(granularity);
-        setTemperatureData(data);
+        setReadings(data);
     };
 
     React.useEffect(() => {
@@ -27,11 +28,14 @@ const TemperatureHistory = () => {
         };
     }, [granularity]);
 
-    const points = temperatureData.slice(0, 100).sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
-    const lowerThreshold = LOW_TEMP_THRESHOLD;
-    const upperThreshold = HIGH_TEMP_THRESHOLD;
+    const points = readings.slice(0, 100).sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+    const lowTemp = LOW_TEMP_THRESHOLD;
+    const highTemp = HIGH_TEMP_THRESHOLD;
 
-    const data = {
+    const lowPh = LOW_PH_THRESHOLD;
+    const highPh = HIGH_PH_THRESHOLD;
+
+    const temperatureData = {
         labels: points.map((reading) => new Date(reading.timestamp).toLocaleTimeString()),
         datasets: [
             {
@@ -47,7 +51,7 @@ const TemperatureHistory = () => {
             },
             {
                 label: "Lower Threshold",
-                data: Array(points.length).fill(lowerThreshold),
+                data: Array(points.length).fill(lowTemp),
                 fill: false,
                 borderColor: "rgba(255,0,0,1)",
                 borderDash: [5, 5],
@@ -55,7 +59,7 @@ const TemperatureHistory = () => {
             },
             {
                 label: "Upper Threshold",
-                data: Array(points.length).fill(upperThreshold),
+                data: Array(points.length).fill(highTemp),
                 fill: false,
                 borderColor: "rgba(255,0,0,1)",
                 borderDash: [5, 5],
@@ -64,7 +68,42 @@ const TemperatureHistory = () => {
         ],
     };
 
-    if (temperatureData.length === 0) {
+    const phData = {
+        labels: points.map((reading) => new Date(reading.timestamp).toLocaleTimeString()),
+        datasets: [
+            {
+                label: "PH",
+                data: points.map((reading) => reading.ph),
+                fill: true,
+                backgroundColor: "rgba(75,192,192,0.2)",
+                borderColor: "rgba(75,192,192,1)",
+                pointBackgroundColor: "rgba(75,192,192,1)",
+                pointBorderColor: "#fff",
+                pointHoverBackgroundColor: "#fff",
+                pointHoverBorderColor: "rgba(75,192,192,1)",
+            },
+            {
+                label: "Lower Threshold",
+                data: Array(points.length).fill(lowPh),
+                fill: false,
+                borderColor: "rgba(255,0,0,1)",
+                borderDash: [5, 5],
+                pointRadius: 0,
+            },
+            {
+                label: "Upper Threshold",
+                data: Array(points.length).fill(highPh),
+                fill: false,
+                borderColor: "rgba(255,0,0,1)",
+                borderDash: [5, 5],
+                pointRadius: 0,
+            },
+        ],
+    };
+
+    console.log(phData)
+
+    if (readings.length === 0) {
         return (
             <>
                 <div>No temperature history </div>
@@ -95,18 +134,31 @@ const TemperatureHistory = () => {
                     Hour
                 </button>
             </div>
-            <Line data={data} options={{
-                scales: {
-                    y: {
-                        min: 10, max: 50, ticks: {
-                            callback: (value) => `${value}°C`,
-                        },
+            <div className="rounded-lg border-white border-2 bg-black p-4">
+                <h2 className="text-white">Temperature Chart</h2>
+                <Line data={temperatureData} options={{
+                    scales: {
+                        y: {
+                            min: 10, max: 50, ticks: {
+                                callback: (value) => `${value}°C`,
+                            },
+                        }
                     }
-                }
-            }} />
+                }} />
+            </div>
+            <div className="rounded-lg border-white border-2 bg-black p-4 mt-4">
+                <h2 className="text-white">PH Chart</h2>
+                <Line data={phData} options={{
+                    scales: {
+                        y: {
+                            min: 3, max: 14
+                        }
+                    }
+                }} />
+            </div>
             <button onClick={() => { seedReadings() }}>Seed</button>
         </div>
     );
 };
 
-export default TemperatureHistory;
+export default HistoryChart;

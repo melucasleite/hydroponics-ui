@@ -1,7 +1,7 @@
 "use client"
 import React from 'react';
 import { getInfo } from '../utils';
-import TemperatureHistory from './temperatureHistory';
+import HistoryChart from './history';
 
 interface WaterLevelProps {
   level: boolean;
@@ -71,7 +71,7 @@ const Info: React.FC = () => {
         <WaterLevel level={lowWaterD} label="Water Level D" />
         <TemperatureLevel temperature={temperature} label={`Temperature: ${temperature}°C`} />
       </div>
-      <TemperatureHistory />
+      <HistoryChart />
     </div>
   );
 };

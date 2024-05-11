@@ -12,12 +12,14 @@ export const getSettings = cache(async () => {
 
 export const seedReadings = async () => {
     const baseTemperature = 25.5;
+    const baseph = 4;
     const readings = [];
     for (let i = 0; i < 16; i++) {
         const temperature = baseTemperature + (i * 0.5) + (Math.random() * 1.5);
+        const ph = baseph + (i * 0.1) + (Math.random() * 0.1);
         const timestamp = new Date();
         await prisma.reading.create({
-            data: { temperature, timestamp }
+            data: { temperature, timestamp, ph }
         });
         readings.push({ temperature, timestamp });
     }
@@ -44,16 +46,17 @@ export const getReadings = cache(async (granularity?: string) => {
         const groupedReadings = groupReadingsByGranularity(readings, granularity);
         return groupedReadings.map((group) => {
             const averageTemperature = calculateAverageTemperature(group);
-            return { temperature: averageTemperature, timestamp: group[0].timestamp };
+            const averagePh = calculateAveragePh(group);
+            return { ph: averagePh, temperature: averageTemperature, timestamp: group[0].timestamp };
         });
     }
 
     return readings.map((reading) => {
-        return { ...reading, temperature: toFloat(reading.temperature) };
+        return { ...reading, temperature: toFloat(reading.temperature), ph: toFloat(reading.ph) };
     });
 });
 
-const groupReadingsByGranularity = (readings: any[], granularity: string) => {
+const groupReadingsByGranularity = (readings: Reading[], granularity: string) => {
     const groupedReadings: any[] = [];
     let group: any[] = [];
     let currentTimestamp: Date | null = null;
@@ -89,6 +92,12 @@ const groupReadingsByGranularity = (readings: any[], granularity: string) => {
 
 const calculateAverageTemperature = (readings: Reading[]) => {
     const sum = readings.reduce((total, reading) => total + toFloat(reading.temperature), 0);
+    return sum / readings.length;
+};
+
+
+const calculateAveragePh = (readings: Reading[]) => {
+    const sum = readings.reduce((total, reading) => total + toFloat(reading.ph), 0);
     return sum / readings.length;
 };
 
