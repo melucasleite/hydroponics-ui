@@ -17,7 +17,7 @@ const SettingsTable: React.FC<{ settings: Settings }> = ({ settings }) => {
             <input type="hidden" value={settings.id} {...register("id", { valueAsNumber: true })} />
             <div className="flex flex-nowrap mb-4 gap-2">
                 <div className="w-1/4">
-                    <label className="block text-center">Flow Rate A</label>
+                    <label className="block text-center">Flow Rate A (ml/min)</label>
                     <input
                         type="number"
                         defaultValue={settings.flowRateA}
@@ -27,7 +27,7 @@ const SettingsTable: React.FC<{ settings: Settings }> = ({ settings }) => {
                     {errors.flowRateA && <span className="text-red-500">Required (1-100)</span>}
                 </div>
                 <div className="w-1/4">
-                    <label className="block text-center">Flow Rate B</label>
+                    <label className="block text-center">Flow Rate B (ml/min)</label>
                     <input
                         type="number"
                         defaultValue={settings.flowRateB}
@@ -37,7 +37,7 @@ const SettingsTable: React.FC<{ settings: Settings }> = ({ settings }) => {
                     {errors.flowRateB && <span className="text-red-500">Required (1-100)</span>}
                 </div>
                 <div className="w-1/4">
-                    <label className="block text-center">Flow Rate C</label>
+                    <label className="block text-center">Flow Rate C (ml/min)</label>
                     <input
                         type="number"
                         defaultValue={settings.flowRateC}
@@ -47,7 +47,7 @@ const SettingsTable: React.FC<{ settings: Settings }> = ({ settings }) => {
                     {errors.flowRateC && <span className="text-red-500">Required (1-100)</span>}
                 </div>
                 <div className="w-1/4">
-                    <label className="block text-center">Flow Rate D</label>
+                    <label className="block text-center">Flow Rate D (ml/min)</label>
                     <input
                         type="number"
                         defaultValue={settings.flowRateD}

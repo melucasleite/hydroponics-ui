@@ -5,11 +5,11 @@ import { AdjustmentsVerticalIcon, PlayCircleIcon, CalendarDaysIcon, MagnifyingGl
 
 const Nav: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const isMobile = window.innerWidth <= 768;
 
     useEffect(() => {
+        const isMobile = window.innerWidth <= 768;
         setIsOpen(!isMobile);
-    }, [isMobile]);
+    }, []);
 
     return (
         <>
