@@ -5,4 +5,4 @@ stop:
 clean:
 	docker-compose down --volumes
 env:
-	vercel env pull .env.development.local 
+	vercel env pull .env

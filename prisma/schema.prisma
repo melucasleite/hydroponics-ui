@@ -13,10 +13,20 @@ datasource db {
   url      = env("DATABASE_PRISMA_URL")
 }
 
+model Info {
+  id          Int     @id @default(autoincrement())
+  temperature Decimal @db.Decimal(3, 2)
+  lowWaterA   Boolean
+  lowWaterB   Boolean
+  lowWaterC   Boolean
+  lowWaterD   Boolean
+}
+
+
 model Settings {
-  id         Int      @id @default(autoincrement())
-  flowRateA  Int
-  flowRateB  Int
-  flowRateC  Int
-  flowRateD  Int
+  id        Int @id @default(autoincrement())
+  flowRateA Int
+  flowRateB Int
+  flowRateC Int
+  flowRateD Int
 }
