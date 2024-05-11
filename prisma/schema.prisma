@@ -15,7 +15,7 @@ datasource db {
 
 model Info {
   id          Int     @id @default(autoincrement())
-  temperature Decimal @db.Decimal(3, 2)
+  temperature Decimal @db.Decimal(5, 2)
   lowWaterA   Boolean
   lowWaterB   Boolean
   lowWaterC   Boolean

@@ -1,5 +1,6 @@
 'use server'
-import { PrismaClient, Settings } from "@prisma/client";
+import { PrismaClient, Settings, Info } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
 import { revalidatePath } from "next/cache";
 import { cache } from "react";
 
@@ -8,6 +9,13 @@ const prisma = new PrismaClient()
 export const getSettings = cache(async () => {
     return findOrCreateSettings();
 });
+
+
+
+export const getInfo = cache(async () => {
+    return findOrCreateInfo();
+});
+
 
 export const saveSettings = async (data: Settings) => {
     await findOrCreateSettings();
@@ -29,4 +37,19 @@ const findOrCreateSettings = async () => {
         return newSettings;
     }
     return found
+}
+
+const findOrCreateInfo = async () => {
+    const found = await prisma.info.findFirst();
+    if (!found) {
+        const info = await prisma.info.create({
+            data: { lowWaterA: false, lowWaterB: false, lowWaterC: false, lowWaterD: false, temperature: -1.0 }
+        })
+        return { ...info, temperature: toFloat(info.temperature) };
+    }
+    return { ...found, temperature: toFloat(found.temperature) }
+}
+
+const toFloat = (value: Decimal) => {
+    return parseFloat(value.toFixed(2));
 }
