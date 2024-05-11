@@ -140,6 +140,8 @@ const HistoryChart = () => {
                         y: {
                             min: 10, max: 50, ticks: {
                                 callback: (value) => `${value}°C`,
+                            }, grid: {
+                                color: 'rgba(255,255,255,0.2)',
                             },
                         }
                     }
@@ -150,8 +152,10 @@ const HistoryChart = () => {
                 <Line data={phData} options={{
                     scales: {
                         y: {
-                            min: 3, max: 14
-                        }
+                            min: 3, max: 14, grid: {
+                                color: 'rgba(255,255,255,0.2)',
+                            },
+                        },
                     }
                 }} />
             </div>
