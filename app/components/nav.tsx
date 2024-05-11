@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { AdjustmentsVerticalIcon, PlayCircleIcon, CalendarDaysIcon, MagnifyingGlassPlusIcon } from "@heroicons/react/20/solid";
+import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 
 const Nav: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -21,6 +22,14 @@ const Nav: React.FC = () => {
                     <li><a href="/schedules" className="py-1 flex items-center"><CalendarDaysIcon className='size-6 mr-2' /> Schedules</a></li>
                     <li><a href="/info" className="py-1 flex items-center"><MagnifyingGlassPlusIcon className='size-6 mr-2' /> Info</a></li>
                 </ul>
+                <SignedOut>
+                    <SignInButton />
+                </SignedOut>
+                <SignedIn>
+                    <div className='text-white'>
+                        <UserButton showName={true} />
+                    </div>
+                </SignedIn>
             </nav>
             <button onClick={() => setIsOpen(!isOpen)} className="md:hidden bg-primary text-white p-2 mb-2">
                 <AdjustmentsVerticalIcon className='size-6 ml-auto mr-auto' />
