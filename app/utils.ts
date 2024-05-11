@@ -1,5 +1,5 @@
 'use server'
-import { PrismaClient, Settings, Info } from "@prisma/client";
+import { PrismaClient, Settings, Info, Reading } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import { revalidatePath } from "next/cache";
 import { cache } from "react";
@@ -10,15 +10,87 @@ export const getSettings = cache(async () => {
     return findOrCreateSettings();
 });
 
-export const getReadings = cache(async () => {
+export const seedReadings = async () => {
+    const baseTemperature = 25.5;
+    const readings = [];
+    for (let i = 0; i < 16; i++) {
+        const temperature = baseTemperature + (i * 0.5) + (Math.random() * 1.5);
+        const timestamp = new Date();
+        await prisma.reading.create({
+            data: { temperature, timestamp }
+        });
+        readings.push({ temperature, timestamp });
+    }
+}
+
+export const getReadings = cache(async (granularity?: string) => {
+    let take = 100;
+    let orderBy: { timestamp: 'desc' } = { timestamp: 'desc' };
+
+    if (granularity === 'second') {
+        take = 1 * 60;
+    } else if (granularity === 'minute') {
+        take = 60 * 60;
+    } else if (granularity === 'hour') {
+        take = 3600 * 24;
+    }
+
     const readings = await prisma.reading.findMany({
-        orderBy: { timestamp: 'desc' },
-        take: 20
-    })
-    return readings.map((reading) => {
-        return { ...reading, temperature: toFloat(reading.temperature) }
+        orderBy,
+        take
     });
-})
+
+    if (granularity === 'second' || granularity === 'minute' || granularity === 'hour') {
+        const groupedReadings = groupReadingsByGranularity(readings, granularity);
+        return groupedReadings.map((group) => {
+            const averageTemperature = calculateAverageTemperature(group);
+            return { temperature: averageTemperature, timestamp: group[0].timestamp };
+        });
+    }
+
+    return readings.map((reading) => {
+        return { ...reading, temperature: toFloat(reading.temperature) };
+    });
+});
+
+const groupReadingsByGranularity = (readings: any[], granularity: string) => {
+    const groupedReadings: any[] = [];
+    let group: any[] = [];
+    let currentTimestamp: Date | null = null;
+
+    for (const reading of readings) {
+        if (!currentTimestamp) {
+            currentTimestamp = reading.timestamp;
+        }
+
+        if (granularity === 'second' && reading.timestamp.getSeconds() !== currentTimestamp?.getSeconds()) {
+            groupedReadings.push(group);
+            group = [];
+            currentTimestamp = reading.timestamp;
+        } else if (granularity === 'minute' && reading.timestamp.getMinutes() !== currentTimestamp?.getMinutes()) {
+            groupedReadings.push(group);
+            group = [];
+            currentTimestamp = reading.timestamp;
+        } else if (granularity === 'hour' && reading.timestamp.getHours() !== currentTimestamp?.getHours()) {
+            groupedReadings.push(group);
+            group = [];
+            currentTimestamp = reading.timestamp;
+        }
+
+        group.push(reading);
+    }
+
+    if (group.length > 0) {
+        groupedReadings.push(group);
+    }
+
+    return groupedReadings;
+};
+
+const calculateAverageTemperature = (readings: Reading[]) => {
+    const sum = readings.reduce((total, reading) => total + toFloat(reading.temperature), 0);
+    return sum / readings.length;
+};
 
 export const getInfo = cache(async () => {
     return findOrCreateInfo();

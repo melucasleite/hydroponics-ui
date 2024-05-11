@@ -2,39 +2,48 @@ import React, { useEffect } from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { HIGH_TEMP_THRESHOLD, LOW_TEMP_THRESHOLD } from "../constants";
-import { getInfo, getReadings } from "../utils";
+import { getReadings, seedReadings } from "../utils";
+import { Reading } from "@prisma/client";
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement);
 
+type parsedReading = Omit<Reading, 'temperature' | 'id'> & {
+    temperature: number;
+};
+
 const TemperatureHistory = () => {
-    const [temperatureData, setTemperatureData] = React.useState<number[]>([]);
-    useEffect(() => {
-        setTemperatureData(Array.from({ length: 100 }, () => Math.random() * (35.5 - 20.0) + 20.0));
-    }, []);
+    const [temperatureData, setTemperatureData] = React.useState<parsedReading[]>([]);
+    const [granularity, setGranularity] = React.useState('second');
+    const [lastGranularity, setLastGranularity] = React.useState('second');
+    const [isLoading, setIsLoading] = React.useState(true); // Add loading state
+
+    const fetchInfo = async () => {
+        if (lastGranularity !== granularity) {
+            setIsLoading(true); // Set loading state to true
+            setLastGranularity(granularity);
+        }
+        const data = await getReadings(granularity);
+        setTemperatureData(data);
+        setIsLoading(false); // Set loading state to false after data is fetched
+    };
 
     React.useEffect(() => {
-        const fetchInfo = async () => {
-            const data = await getReadings();
-            setTemperatureData(data.map((reading) => reading.temperature));
-        };
-
         const interval = setInterval(fetchInfo, 1000);
-
         return () => {
             clearInterval(interval);
         };
-    }, []);
+    }, [granularity, lastGranularity]);
 
-    const last20Points = temperatureData.slice(-20);
+    const points = temperatureData.slice(0, 100).sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
     const lowerThreshold = LOW_TEMP_THRESHOLD;
     const upperThreshold = HIGH_TEMP_THRESHOLD;
 
     const data = {
-        labels: last20Points.map((_, index) => `Point ${index + 1}`),
+        labels: points.map((reading) => new Date(reading.timestamp).toLocaleTimeString()),
         datasets: [
             {
                 label: "Temperature",
-                data: last20Points,
+                data: points.map((reading) => reading.temperature),
                 fill: true,
                 backgroundColor: "rgba(75,192,192,0.2)",
                 borderColor: "rgba(75,192,192,1)",
@@ -45,7 +54,7 @@ const TemperatureHistory = () => {
             },
             {
                 label: "Lower Threshold",
-                data: Array(20).fill(lowerThreshold),
+                data: Array(points.length).fill(lowerThreshold),
                 fill: false,
                 borderColor: "rgba(255,0,0,1)",
                 borderDash: [5, 5],
@@ -53,7 +62,7 @@ const TemperatureHistory = () => {
             },
             {
                 label: "Upper Threshold",
-                data: Array(20).fill(upperThreshold),
+                data: Array(points.length).fill(upperThreshold),
                 fill: false,
                 borderColor: "rgba(255,0,0,1)",
                 borderDash: [5, 5],
@@ -62,13 +71,51 @@ const TemperatureHistory = () => {
         ],
     };
 
+    if (isLoading) {
+        return <div>Loading...</div>; // Render loader while data is fetching
+    }
+
     if (temperatureData.length === 0) {
-        return <div>No temperature history</div>;
+        return (
+            <>
+                <div>No temperature history </div>
+                <button onClick={() => { seedReadings() }}>Seed</button>
+            </>
+        );
     }
 
     return (
         <div>
-            <Line data={data} />
+            <div className="flex ml-auto">
+                <button
+                    className={`px-2 mx-2 bg-${granularity === 'second' ? 'primary' : 'black'}`}
+                    onClick={() => setGranularity('second')}
+                >
+                    Second
+                </button>
+                <button
+                    className={`px-2 mx-2 bg-${granularity === 'minute' ? 'primary' : 'black'}`}
+                    onClick={() => setGranularity('minute')}
+                >
+                    Minute
+                </button>
+                <button
+                    className={`px-2 mx-2 bg-${granularity === 'hour' ? 'primary' : 'black'}`}
+                    onClick={() => setGranularity('hour')}
+                >
+                    Hour
+                </button>
+            </div>
+            <Line data={data} options={{
+                scales: {
+                    y: {
+                        min: 10, max: 50, ticks: {
+                            callback: (value) => `${value}°C`,
+                        },
+                    }
+                }
+            }} />
+            <button onClick={() => { seedReadings() }}>Seed</button>
         </div>
     );
 };
