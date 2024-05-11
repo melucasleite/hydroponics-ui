@@ -10,7 +10,7 @@ interface WaterLevelProps {
 
 const WaterLevel: React.FC<WaterLevelProps> = ({ level, label }) => {
   return (
-    <div className={`flex-1 p-4 ${level ? 'bg-danger' : 'bg-green-500'}`}>
+    <div className={`flex-1 p-4 border-2 ${level ? 'border-danger' : 'border-green-500'}`}>
       <h2>{label}</h2>
       <p>{level ? 'Low' : 'Normal'}</p>
     </div>
@@ -23,13 +23,13 @@ interface TemperatureLevelProps {
 }
 
 const TemperatureLevel: React.FC<TemperatureLevelProps> = ({ temperature, label }) => {
-  let color = 'bg-green-500';
+  let color = 'border-2 border-green-500';
   if (temperature < 25) {
-    color = 'bg-blue-500';
+    color = 'border-2 border-blue-500';
   } else if (temperature > 35) {
-    color = 'bg-danger';
+    color = 'border-2 border-danger';
   } else {
-    color = 'bg-green-500'
+    color = 'border-2 border-green-500'
   }
 
   return (

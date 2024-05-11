@@ -9,7 +9,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: "rgba(75,192,192)",
+        primary: "rgba(30,142,255)",
         danger: "rgba(255,0,0,1)"
       },
       backgroundImage: {

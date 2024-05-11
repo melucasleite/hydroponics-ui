@@ -43,11 +43,11 @@ const HistoryChart = () => {
                 data: points.map((reading) => reading.temperature),
                 fill: true,
                 backgroundColor: "rgba(75,192,192,0.2)",
-                borderColor: "rgba(75,192,192,1)",
-                pointBackgroundColor: "rgba(75,192,192,1)",
+                borderColor: "rgba(30,142,255)",
+                pointBackgroundColor: "rgba(30,142,255)",
                 pointBorderColor: "#fff",
                 pointHoverBackgroundColor: "#fff",
-                pointHoverBorderColor: "rgba(75,192,192,1)",
+                pointHoverBorderColor: "rgba(30,142,255)",
             },
             {
                 label: "Lower Threshold",
@@ -76,11 +76,11 @@ const HistoryChart = () => {
                 data: points.map((reading) => reading.ph),
                 fill: true,
                 backgroundColor: "rgba(75,192,192,0.2)",
-                borderColor: "rgba(75,192,192,1)",
-                pointBackgroundColor: "rgba(75,192,192,1)",
+                borderColor: "rgba(30,142,255)",
+                pointBackgroundColor: "rgba(30,142,255)",
                 pointBorderColor: "#fff",
                 pointHoverBackgroundColor: "#fff",
-                pointHoverBorderColor: "rgba(75,192,192,1)",
+                pointHoverBorderColor: "rgba(30,142,255)",
             },
             {
                 label: "Lower Threshold",
@@ -111,24 +111,23 @@ const HistoryChart = () => {
             </>
         );
     }
-
     return (
         <div className="mt-2">
             <div className="flex gap-2 mb-2">
                 <button
-                    className={`px-2 ml-auto bg-${granularity === 'second' ? 'primary' : 'black'}`}
+                    className={`px-2 ml-auto border-2 rounded ${granularity === 'second' ? 'border-primary' : 'black'}`}
                     onClick={() => setGranularity('second')}
                 >
                     Second
                 </button>
                 <button
-                    className={`px-2 bg-${granularity === 'minute' ? 'primary' : 'black'}`}
+                    className={`px-2 border-2 rounded ${granularity === 'minute' ? 'border-primary' : 'black'}`}
                     onClick={() => setGranularity('minute')}
                 >
                     Minute
                 </button>
                 <button
-                    className={`px-2 bg-${granularity === 'hour' ? 'primary' : 'black'}`}
+                    className={`px-2 border-2 rounded ${granularity === 'hour' ? 'border-primary' : 'black'}`}
                     onClick={() => setGranularity('hour')}
                 >
                     Hour

@@ -14,7 +14,7 @@ const Nav: React.FC = () => {
 
     return (
         <>
-            <nav className={`md:w-1/4 bg-black-200 p-4 md:block md:h-full ${isOpen ? 'block' : 'hidden'}`}>
+            <nav className={`md:w-[12rem] md:ml-2 mt-4 border-2 rounded bg-black-200 p-4 md:block md:h-full ${isOpen ? 'block' : 'hidden'}`}>
                 <ul>
                     <li><a href="/" className="block py-1">Home</a></li>
                     <li><a href="/settings" className="py-1 flex items-center"><AdjustmentsVerticalIcon className='size-6 mr-2' /> Settings</a></li>
