@@ -9,7 +9,8 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: "rgba(75,192,192)"
+        primary: "rgba(75,192,192)",
+        danger: "rgba(255,0,0,1)"
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

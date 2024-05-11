@@ -10,7 +10,7 @@ interface WaterLevelProps {
 
 const WaterLevel: React.FC<WaterLevelProps> = ({ level, label }) => {
   return (
-    <div className={`flex-1 p-4 ${level ? 'bg-red-500' : 'bg-green-500'}`}>
+    <div className={`flex-1 p-4 ${level ? 'bg-danger' : 'bg-green-500'}`}>
       <h2>{label}</h2>
       <p>{level ? 'Low' : 'Normal'}</p>
     </div>

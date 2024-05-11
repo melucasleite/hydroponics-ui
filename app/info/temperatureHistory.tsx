@@ -14,17 +14,10 @@ type parsedReading = Omit<Reading, 'temperature' | 'id'> & {
 const TemperatureHistory = () => {
     const [temperatureData, setTemperatureData] = React.useState<parsedReading[]>([]);
     const [granularity, setGranularity] = React.useState('second');
-    const [lastGranularity, setLastGranularity] = React.useState('second');
-    const [isLoading, setIsLoading] = React.useState(true); // Add loading state
 
     const fetchInfo = async () => {
-        if (lastGranularity !== granularity) {
-            setIsLoading(true); // Set loading state to true
-            setLastGranularity(granularity);
-        }
         const data = await getReadings(granularity);
         setTemperatureData(data);
-        setIsLoading(false); // Set loading state to false after data is fetched
     };
 
     React.useEffect(() => {
@@ -32,7 +25,7 @@ const TemperatureHistory = () => {
         return () => {
             clearInterval(interval);
         };
-    }, [granularity, lastGranularity]);
+    }, [granularity]);
 
     const points = temperatureData.slice(0, 100).sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
     const lowerThreshold = LOW_TEMP_THRESHOLD;
@@ -71,10 +64,6 @@ const TemperatureHistory = () => {
         ],
     };
 
-    if (isLoading) {
-        return <div>Loading...</div>; // Render loader while data is fetching
-    }
-
     if (temperatureData.length === 0) {
         return (
             <>
@@ -85,22 +74,22 @@ const TemperatureHistory = () => {
     }
 
     return (
-        <div>
-            <div className="flex ml-auto">
+        <div className="mt-2">
+            <div className="flex gap-2 mb-2">
                 <button
-                    className={`px-2 mx-2 bg-${granularity === 'second' ? 'primary' : 'black'}`}
+                    className={`px-2 ml-auto bg-${granularity === 'second' ? 'primary' : 'black'}`}
                     onClick={() => setGranularity('second')}
                 >
                     Second
                 </button>
                 <button
-                    className={`px-2 mx-2 bg-${granularity === 'minute' ? 'primary' : 'black'}`}
+                    className={`px-2 bg-${granularity === 'minute' ? 'primary' : 'black'}`}
                     onClick={() => setGranularity('minute')}
                 >
                     Minute
                 </button>
                 <button
-                    className={`px-2 mx-2 bg-${granularity === 'hour' ? 'primary' : 'black'}`}
+                    className={`px-2 bg-${granularity === 'hour' ? 'primary' : 'black'}`}
                     onClick={() => setGranularity('hour')}
                 >
                     Hour
