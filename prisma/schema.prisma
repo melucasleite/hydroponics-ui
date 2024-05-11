@@ -22,11 +22,16 @@ model Info {
   lowWaterD   Boolean
 }
 
-
 model Settings {
   id        Int @id @default(autoincrement())
   flowRateA Int
   flowRateB Int
   flowRateC Int
   flowRateD Int
+}
+
+model Reading {
+  id          Int      @id @default(autoincrement())
+  timestamp   DateTime @default(now())
+  temperature Decimal  @db.Decimal(5, 2)
 }

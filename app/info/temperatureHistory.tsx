@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { HIGH_TEMP_THRESHOLD, LOW_TEMP_THRESHOLD } from "../constants";
-import { getInfo } from "../utils";
+import { getInfo, getReadings } from "../utils";
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement);
 
@@ -14,7 +14,8 @@ const TemperatureHistory = () => {
 
     React.useEffect(() => {
         const fetchInfo = async () => {
-            const data = await getInfo();
+            const data = await getReadings();
+            setTemperatureData(data.map((reading) => reading.temperature));
         };
 
         const interval = setInterval(fetchInfo, 1000);
@@ -60,6 +61,11 @@ const TemperatureHistory = () => {
             },
         ],
     };
+
+    if (temperatureData.length === 0) {
+        return <div>No temperature history</div>;
+    }
+
     return (
         <div>
             <Line data={data} />

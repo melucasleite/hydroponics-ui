@@ -10,7 +10,15 @@ export const getSettings = cache(async () => {
     return findOrCreateSettings();
 });
 
-
+export const getReadings = cache(async () => {
+    const readings = await prisma.reading.findMany({
+        orderBy: { timestamp: 'desc' },
+        take: 20
+    })
+    return readings.map((reading) => {
+        return { ...reading, temperature: toFloat(reading.temperature) }
+    });
+})
 
 export const getInfo = cache(async () => {
     return findOrCreateInfo();
