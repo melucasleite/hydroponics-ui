@@ -1,5 +1,5 @@
 'use server'
-import { PrismaClient, Settings, Info, Reading } from "@prisma/client";
+import { PrismaClient, Settings, Info, Reading, Prisma } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import { revalidatePath } from "next/cache";
 import { cache } from "react";
@@ -7,8 +7,41 @@ import { cache } from "react";
 const prisma = new PrismaClient()
 
 export const getSettings = cache(async () => {
-    return findOrCreateSettings();
-});
+    return findFirstOrCreateSettings();
+})
+
+export const getSchedules = cache(async () => {
+    const schedules = await prisma.schedule.findMany({
+        include: { weeklyParts: true }
+    });
+    return schedules.map((schedule) => {
+        return {
+            ...schedule, weeklyParts: schedule.weeklyParts.map((part) => ({
+                ...part,
+                partA: toFloat(part.partA),
+                partB: toFloat(part.partB),
+                partC: toFloat(part.partC)
+            }))
+        }
+    });
+})
+
+export const addSChedule = async (data: any) => {
+    const schedule = await prisma.schedule.create({
+        data: {
+            weeklyParts: { create: data.weeklyParts }
+        }
+    });
+    revalidatePath('/schedules')
+    return schedule;
+}
+
+export const deleteSchedule = async (id: number) => {
+    await prisma.schedule.delete({
+        where: { id }
+    });
+    revalidatePath('/schedules')
+}
 
 export const seedReadings = async () => {
     const baseTemperature = 25.5;
@@ -102,12 +135,12 @@ const calculateAveragePh = (readings: Reading[]) => {
 };
 
 export const getInfo = cache(async () => {
-    return findOrCreateInfo();
+    return findFirstOrCreateInfo();
 });
 
 
 export const saveSettings = async (data: Settings) => {
-    await findOrCreateSettings();
+    await findFirstOrCreateSettings();
     const updatedSettings = await prisma.settings.update({
         where: { id: data.id },
         data: { flowRateA: data.flowRateA, flowRateB: data.flowRateB, flowRateC: data.flowRateC, flowRateD: data.flowRateD }
@@ -117,7 +150,7 @@ export const saveSettings = async (data: Settings) => {
 }
 
 
-const findOrCreateSettings = async () => {
+const findFirstOrCreateSettings = async () => {
     const found = await prisma.settings.findFirst();
     if (!found) {
         const newSettings = await prisma.settings.create({
@@ -128,7 +161,7 @@ const findOrCreateSettings = async () => {
     return found
 }
 
-const findOrCreateInfo = async () => {
+const findFirstOrCreateInfo = async () => {
     const found = await prisma.info.findFirst();
     if (!found) {
         const info = await prisma.info.create({

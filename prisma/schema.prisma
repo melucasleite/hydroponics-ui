@@ -34,5 +34,21 @@ model Reading {
   id          Int      @id @default(autoincrement())
   timestamp   DateTime @default(now())
   temperature Decimal  @db.Decimal(5, 2)
-  ph Decimal  @db.Decimal(5, 2)
+  ph          Decimal  @db.Decimal(5, 2)
+}
+
+model Schedule {
+  id          Int          @id @default(autoincrement())
+  timestamp   DateTime     @default(now())
+  weeklyParts WeeklyPart[]
+}
+
+model WeeklyPart {
+  id         Int      @id @default(autoincrement())
+  week       Int
+  partA      Decimal  @db.Decimal(5, 2)
+  partB      Decimal  @db.Decimal(5, 2)
+  partC      Decimal  @db.Decimal(5, 2)
+  schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  scheduleId Int
 }
