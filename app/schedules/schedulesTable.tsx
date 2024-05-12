@@ -23,41 +23,43 @@ const SchedulesTable: React.FC<SchedulesTableProps> = ({ schedules }) => {
     return (
         <div>
             {schedules.map((schedule) => (
-                <div key={schedule.id}>
-                    <h2>Schedule {schedule.id}</h2>
-                    <button onClick={() => deleteSchedule(schedule.id)}>Delete</button>
+                <div key={schedule.id} className=' border-2 border-white p-2'>
                     <table>
                         <thead>
                             <tr>
-                                <th>Part/Week</th>
+                                <th className='p-2'>Part</th>
                                 {schedule.weeklyParts.map((part) => (
-                                    <th key={part.id}>Week {part.week}</th>
+                                    <th className='p-2' key={part.id}>Week {part.week}</th>
                                 ))}
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Part A</td>
+                                <td className='p-2 text-center'>Part A</td>
                                 {schedule.weeklyParts.map((part) => (
-                                    <td key={"a" + part.id}>{part.partA.toFixed(2)}</td>
+                                    <td className={"text-center border-2 border-white"} key={"a" + part.id}>{part.partA.toFixed(2)}</td>
                                 ))}
                             </tr>
                             <tr>
-                                <td>Part B</td>
+                                <td className='p-2 text-center'>Part B</td>
                                 {schedule.weeklyParts.map((part) => (
-                                    <td key={"b" + part.id}>{part.partB.toFixed(2)}</td>
+                                    <td className={"text-center border-2 border-white"} key={"b" + part.id}>{part.partB.toFixed(2)}</td>
                                 ))}
                             </tr>
                             <tr>
-                                <td>Part C</td>
+                                <td className='p-2 text-center'>Part C</td>
                                 {schedule.weeklyParts.map((part) => (
-                                    <td key={"c" + part.id}>{part.partC.toFixed(2)}</td>
+                                    <td className={"text-center border-2 border-white"} key={"c" + part.id}>{part.partC.toFixed(2)}</td>
                                 ))}
                             </tr>
                         </tbody>
                     </table>
+                    <div className='flex pt-5'>
+                        <button className='ml-auto rounded bg-primary p-1 px-2' onClick={() => deleteSchedule(schedule.id)}>Delete</button>
+                    </div>
                 </div>
             ))}
+
         </div>
     );
 };
