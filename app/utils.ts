@@ -26,7 +26,7 @@ export const getSchedules = cache(async () => {
     });
 })
 
-export const addSChedule = async (data: any) => {
+export const addSchedule = async (data: any) => {
     const schedule = await prisma.schedule.create({
         data: {
             weeklyParts: { create: data.weeklyParts }
