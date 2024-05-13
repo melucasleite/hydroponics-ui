@@ -52,7 +52,7 @@ const readAndInsert = (data: string) => {
     const temperatureRaw = readings.find((reading) => reading.port === 'A0')?.value;
     const phRaw = readings.find((reading) => reading.port === 'A1')?.value;
     if (temperatureRaw && phRaw)
-        insertReading(convertToVolts(temperatureRaw), convertToVolts(phRaw));
+        insertReading(temperatureRaw / 10, convertToVolts(phRaw));
     else
         console.error('Invalid readings');
 }
@@ -68,3 +68,7 @@ async function insertReading(temperature: number, ph: number) {
         },
     });
 }
+
+const map = (value: number, inMin: number, inMax: number, outMin: number, outMax: number): number => {
+    return (value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+};

@@ -1,8 +1,16 @@
+#include <OneWire.h>
+#include <DallasTemperature.h>
+
+#define ONE_WIRE_BUS 4
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&oneWire);
+
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   for (int i = 0; i <= 15; i++) {
     pinMode(i, INPUT);
   }
+  sensors.begin();
 }
 
 void loop() {
@@ -18,7 +26,10 @@ void loop() {
           readings += "-";
         }
       }
-      readings += "\n";
+      sensors.requestTemperatures();
+      float tempC = sensors.getTempCByIndex(0);
+      readings += "-T1V" + String(int(tempC*10)) + "\n";
       Serial.print(readings);
     }
   }
+}
