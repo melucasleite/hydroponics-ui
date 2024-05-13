@@ -51,7 +51,7 @@ const readAndInsert = (data: string) => {
     console.log('Parsed readings:', readings);
     const temperatureRaw = readings.find((reading) => reading.port === 'T1')?.value;
     const phRaw = readings.find((reading) => reading.port === 'A1')?.value;
-    if (temperatureRaw && phRaw)
+    if (temperatureRaw !== undefined && phRaw !== undefined)
         insertReading(temperatureRaw / 10, convertToVolts(phRaw));
     else
         console.error('Invalid readings');
