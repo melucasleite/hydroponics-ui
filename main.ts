@@ -4,6 +4,14 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+const temperatureCoversion = (value: number) => {
+    return (value / 1023) * 100;
+}
+
+const phConversion = (value: number) => {
+    return (value * 1.2 / 1023) * 14;
+}
+
 async function detectArduinoMega(): Promise<string | undefined> {
     const arduinoMegaVendorId = '2341';
     const arduinoMegaProductId = '0042';
@@ -40,14 +48,15 @@ const requestReadings = () => {
 
 const readAndInsert = (data: string) => {
     console.log('Received data:', data);
-    const readings = data.split('\n').map((reading: string) => {
-        const [port, value] = reading.split('-');
+    const readings = data.split('-').map((reading: string) => {
+        const [port, value] = reading.split('V');
         return { port, value: Number(value) };
     });
-    const temperature = readings.find((reading) => reading.port === 'A0')?.value;
-    const ph = readings.find((reading) => reading.port === 'A1')?.value;
-    if (temperature && ph)
-        insertReading(temperature, ph);
+    console.log('Parsed readings:', readings);
+    const temperatureRaw = readings.find((reading) => reading.port === 'A0')?.value;
+    const phRaw = readings.find((reading) => reading.port === 'A1')?.value;
+    if (temperatureRaw && phRaw)
+        insertReading(temperatureCoversion(temperatureRaw), phConversion(phRaw));
     else
         console.error('Invalid readings');
 }
