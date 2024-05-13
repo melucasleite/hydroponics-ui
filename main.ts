@@ -34,10 +34,12 @@ setInterval(() => {
 }, 1000);
 
 const requestReadings = () => {
+    console.log('Requesting readings...');
     port.write('analog\n');
 }
 
 const readAndInsert = (data: string) => {
+    console.log('Received data:', data);
     const readings = data.split('\n').map((reading: string) => {
         const [port, value] = reading.split('-');
         return { port, value: Number(value) };
@@ -53,6 +55,7 @@ const readAndInsert = (data: string) => {
 parser.on('data', readAndInsert);
 
 async function insertReading(temperature: number, ph: number) {
+    console.log('Inserting reading:', { temperature, ph });
     await prisma.reading.create({
         data: {
             temperature,
