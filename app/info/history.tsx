@@ -138,8 +138,8 @@ const HistoryChart = () => {
                 <Line data={temperatureData} options={{
                     scales: {
                         y: {
-                            min: 10, max: 50, ticks: {
-                                callback: (value) => `${value}°C`,
+                            min: 0, max: 5, ticks: {
+                                callback: (value) => `${value}v`,
                             }, grid: {
                                 color: 'rgba(255,255,255,0.2)',
                             },
@@ -152,7 +152,9 @@ const HistoryChart = () => {
                 <Line data={phData} options={{
                     scales: {
                         y: {
-                            min: 3, max: 14, grid: {
+                            min: 0, max: 5, ticks: {
+                                callback: (value) => `${value}v`,
+                            }, grid: {
                                 color: 'rgba(255,255,255,0.2)',
                             },
                         },

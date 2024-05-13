@@ -4,12 +4,8 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const temperatureCoversion = (value: number) => {
-    return (value / 1023) * 100;
-}
-
-const phConversion = (value: number) => {
-    return (value * 1.2 / 1023) * 14;
+const convertToVolts = (value: number) => {
+    return (value * 5 / 1023);
 }
 
 async function detectArduinoMega(): Promise<string | undefined> {
@@ -56,7 +52,7 @@ const readAndInsert = (data: string) => {
     const temperatureRaw = readings.find((reading) => reading.port === 'A0')?.value;
     const phRaw = readings.find((reading) => reading.port === 'A1')?.value;
     if (temperatureRaw && phRaw)
-        insertReading(temperatureCoversion(temperatureRaw), phConversion(phRaw));
+        insertReading(convertToVolts(temperatureRaw), convertToVolts(phRaw));
     else
         console.error('Invalid readings');
 }
