@@ -20,7 +20,6 @@ const Nav: React.FC = () => {
                     <li><a href="/settings" className="py-1 flex items-center"><AdjustmentsVerticalIcon className='size-6 mr-2' /> Settings</a></li>
                     <li><a href="/schedules" className="py-1 flex items-center"><CalendarDaysIcon className='size-6 mr-2' /> Feeding Schedule</a></li>
                     <li><a href="/actions" className="py-1 flex items-center"><PlayCircleIcon className='size-6 mr-2' /> Actions</a></li>
-                    <li><a href="/info" className="py-1 flex items-center"><MagnifyingGlassPlusIcon className='size-6 mr-2' /> Info</a></li>
                 </ul>
                 <SignedOut>
                     <SignInButton />

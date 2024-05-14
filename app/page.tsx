@@ -1,22 +1,80 @@
-// page.tsx
+"use client"
 import React from 'react';
-import Head from 'next/head';
-import Nav from './components/nav';
+import { getInfo } from './utils';
+import HistoryChart from './history';
+import PageLayout from './components/pageLayout';
 
-const Home: React.FC = () => {
+interface WaterLevelProps {
+    level: boolean;
+    label: string;
+}
+
+const WaterLevel: React.FC<WaterLevelProps> = ({ level, label }) => {
     return (
-        <div className="flex flex-col md:flex-row h-screen">
-            <Head>
-                <title>My App</title>
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
-            <Nav />
-            <main className="md:w-3/4 p-4 overflow-auto">
-                <h1 className="text-2xl mb-4">Welcome to My App</h1>
-                <p>This is the main content area.</p>
-            </main>
+        <div className={`flex-1 p-4 rounded border-2 ${level ? 'border-danger' : 'border-green-500'}`}>
+            <h2>{label}</h2>
+            <p>{level ? 'Low' : 'Normal'}</p>
         </div>
     );
 };
 
-export default Home;
+interface TemperatureLevelProps {
+    temperature: number;
+    label: string;
+}
+
+const TemperatureLevel: React.FC<TemperatureLevelProps> = ({ temperature, label }) => {
+    let color = 'rounded border-2 border-green-500';
+    if (temperature < 25) {
+        color = 'rounded border-2 border-blue-500';
+    } else if (temperature > 35) {
+        color = 'rounded border-2 border-danger';
+    } else {
+        color = 'rounded border-2 border-green-500'
+    }
+
+    return (
+        <div className={`flex-1 p-4 ${color}`}>
+            <h2>{label}</h2>
+            <p>{temperature < 25 ? 'Low' : temperature > 35 ? 'High' : 'Normal'}</p>
+        </div>
+    );
+};
+
+const Info: React.FC = () => {
+    const [info, setInfo] = React.useState<any>(null);
+
+    React.useEffect(() => {
+        const fetchInfo = async () => {
+            const data = await getInfo();
+            setInfo(data);
+        };
+
+        const interval = setInterval(fetchInfo, 1000);
+
+        return () => {
+            clearInterval(interval);
+        };
+    }, []);
+
+    if (!info) {
+        return <p>Loading...</p>;
+    }
+
+    const { lowWaterA, lowWaterB, lowWaterC, lowWaterD, temperature } = info;
+
+    return (
+        <div>
+            <div className="flex flex-wrap gap-2 text-center">
+                <WaterLevel level={lowWaterA} label="Water Level A" />
+                <WaterLevel level={lowWaterB} label="Water Level B" />
+                <WaterLevel level={lowWaterC} label="Water Level C" />
+                <WaterLevel level={lowWaterD} label="Water Level D" />
+                <TemperatureLevel temperature={temperature} label={`Temperature: ${temperature}°C`} />
+            </div>
+            <HistoryChart />
+        </div>
+    );
+};
+
+export default Info;
