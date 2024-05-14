@@ -1,57 +1,32 @@
+"use client"
 import React, { useEffect } from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { HIGH_PH_THRESHOLD, HIGH_TEMP_THRESHOLD, LOW_PH_THRESHOLD, LOW_TEMP_THRESHOLD } from "../constants";
 import { Granularity, getReadings } from "../utils";
-import { Reading } from "@prisma/client";
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement);
 
-type parsedReading = Omit<Reading, 'date' | 'hour' | 'minute' | 'second' | 'temperature' | 'id' | 'ph'> & {
+type ParsedReading = {
+    interval: Date;
     temperature: number | null;
     ph: number | null;
 };
 
 const HistoryChart = () => {
-    const [readings, setReadings] = React.useState<parsedReading[]>([]);
+    const [readings, setReadings] = React.useState<ParsedReading[]>([]);
     const [granularity, setGranularity] = React.useState<Granularity>('second');
     const granularityRef = React.useRef(granularity);
     const timeoutIdRef = React.useRef<NodeJS.Timeout | null>(null); // Use a ref to hold the timeout id
 
-    React.useEffect(() => {
-        granularityRef.current = granularity;
-    }, [granularity]);
-
-    const granularityToInterval = {
-        'second': 5000,
-        'minute': 60000,
-        'hour': 3600000,
-        '6hours': 21600000
+    const poolingInterval = {
+        'second': 1000,
+        'minute': 1000,
+        'hour': 1000,
+        'day': 1000
     };
 
-    const fetchInfo = async () => {
-        const data = await getReadings(granularityRef.current);
-        setReadings(data);
-        timeoutIdRef.current = setTimeout(fetchInfo, granularityToInterval[granularityRef.current]);
-    };
-
-    const formatLabel = (value: string | number, granularity: Granularity) => {
-        console.log(value)
-        let date = new Date(value);
-        switch (granularity) {
-            case 'second':
-                return `${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
-            case 'minute':
-                return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-            case 'hour':
-            case '6hours':
-                return `${date.getDate().toString().padStart(2, '0')}/${date.getMonth() + 1} - ${date.getHours().toString().padStart(2, '0')}`;
-            default:
-                return value;
-        }
-    }
-
-    React.useEffect(() => {
+    useEffect(() => {
         fetchInfo();
         return () => {
             if (timeoutIdRef.current) {
@@ -59,6 +34,19 @@ const HistoryChart = () => {
             }
         };
     }, [granularity]);
+
+    const fetchInfo = async () => {
+        console.log('fetchInfo');
+        const data = await getReadings(granularityRef.current);
+        console.log(data)
+        setReadings(data);
+        timeoutIdRef.current = setTimeout(fetchInfo, poolingInterval[granularityRef.current]);
+    };
+
+    useEffect(() => {
+        granularityRef.current = granularity;
+    }, [granularity]);
+
 
     const lowTemp = LOW_TEMP_THRESHOLD;
     const highTemp = HIGH_TEMP_THRESHOLD;
@@ -68,7 +56,7 @@ const HistoryChart = () => {
 
 
     const temperatureData = {
-        labels: readings.map((reading) => formatLabel(reading.timestamp.toISOString(), granularity)),
+        labels: readings.map((reading) => formatLabel(reading.interval, granularityRef.current)),
         datasets: [
             {
                 label: "Temperature",
@@ -100,10 +88,8 @@ const HistoryChart = () => {
         ],
     };
 
-    console.log(temperatureData)
-
     const phData = {
-        labels: readings.map((reading) => new Date(reading.timestamp).toLocaleTimeString()),
+        labels: readings.map((reading) => formatLabel(reading.interval, granularityRef.current)),
         datasets: [
             {
                 label: "PH",
@@ -157,10 +143,10 @@ const HistoryChart = () => {
                     Hour
                 </button>
                 <button
-                    className={`px-2 border-2 rounded ${granularity === '6hours' ? 'border-primary' : 'black'}`}
-                    onClick={() => setGranularity('6hours')}
+                    className={`px-2 border-2 rounded ${granularity === 'day' ? 'border-primary' : 'black'}`}
+                    onClick={() => setGranularity('day')}
                 >
-                    6 Hours
+                    Day
                 </button>
             </div>
             <div className="rounded-lg border-white border-2 bg-black p-4">
@@ -196,3 +182,17 @@ const HistoryChart = () => {
 };
 
 export default HistoryChart;
+
+function formatLabel(interval: Date, granularity: Granularity): string {
+    switch (granularity) {
+        case 'second':
+            return interval.toLocaleTimeString();
+        case 'minute':
+            return interval.toLocaleTimeString();
+        case 'hour':
+            return interval.toLocaleTimeString();
+        case 'day':
+            return interval.toLocaleDateString();
+    }
+}
+
