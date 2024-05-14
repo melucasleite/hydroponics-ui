@@ -61,10 +61,18 @@ parser.on('data', readAndInsert);
 
 async function insertReading(temperature: number, ph: number) {
     console.log('Inserting reading:', { temperature, ph });
+    const now = new Date();
+    const hour = now.getHours();
+    const minute = now.getMinutes();
+    const second = now.getSeconds();
+
     await prisma.reading.create({
         data: {
             temperature,
             ph,
+            hour,
+            minute,
+            second
         },
     });
 }

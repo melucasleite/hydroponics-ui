@@ -34,6 +34,10 @@ model Settings {
 model Reading {
   id          Int      @id @default(autoincrement())
   timestamp   DateTime @default(now())
+  date        DateTime @default(now())
+  hour        Int
+  minute      Int
+  second      Int
   temperature Decimal  @db.Decimal(5, 2)
   ph          Decimal  @db.Decimal(5, 2)
 }

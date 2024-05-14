@@ -44,18 +44,41 @@ export const deleteSchedule = async (id: number) => {
     revalidatePath('/schedules')
 }
 
-export const seedReadings = async () => {
-    const baseTemperature = 25.5;
-    const baseph = 4;
-    const readings = [];
-    for (let i = 0; i < 16; i++) {
-        const temperature = baseTemperature + (i * 0.5) + (Math.random() * 1.5);
-        const ph = baseph + (i * 0.1) + (Math.random() * 0.1);
-        const timestamp = new Date();
-        await prisma.reading.create({
-            data: { temperature, timestamp, ph }
-        });
-        readings.push({ temperature, timestamp });
+export type Granularity = 'second' | 'minute' | 'hour' | "6hours";
+
+function generateTimeSeries(granularity: Granularity): Date[] {
+    const current = Date.now();
+
+    switch (granularity) {
+        case 'second':
+            return Array.from({ length: 60 }, (_, i) => {
+                const date = new Date(current - (i * 1000));
+                date.setMilliseconds(0);
+                return date;
+            });
+        case 'minute':
+            return Array.from({ length: 60 }, (_, i) => {
+                const date = new Date(current - (i * 60 * 1000));
+                date.setMilliseconds(0);
+                date.setSeconds(0);
+                return date;
+            });
+        case 'hour':
+            return Array.from({ length: 48 }, (_, i) => {
+                const date = new Date(current - (i * 60 * 60 * 1000));
+                date.setMilliseconds(0);
+                date.setSeconds(0);
+                date.setMinutes(0);
+                return date;
+            });
+        case '6hours':
+            return Array.from({ length: 48 }, (_, i) => {
+                const date = new Date(current - (i * 6 * 60 * 60 * 1000));
+                date.setMilliseconds(0);
+                date.setSeconds(0);
+                date.setMinutes(0);
+                return date;
+            });
     }
 }
 
@@ -69,6 +92,8 @@ export const getReadings = cache(async (granularity?: string) => {
         take = 60 * 60;
     } else if (granularity === 'hour') {
         take = 3600 * 24;
+    } else if (granularity === '6hours') {
+        take = 4 * 3600 * 24;
     }
 
     const readings = await prisma.reading.findMany({
@@ -76,7 +101,7 @@ export const getReadings = cache(async (granularity?: string) => {
         take
     });
 
-    if (granularity === 'second' || granularity === 'minute' || granularity === 'hour') {
+    if (granularity === 'second' || granularity === 'minute' || granularity === 'hour' || granularity === '6hours') {
         for (const reading of readings) {
             if (granularity === 'second') {
                 reading.timestamp.setMilliseconds(0)
@@ -87,20 +112,32 @@ export const getReadings = cache(async (granularity?: string) => {
                 reading.timestamp.setMilliseconds(0)
                 reading.timestamp.setSeconds(0)
                 reading.timestamp.setMinutes(0)
+            } else if (granularity === '6hours') {
+                reading.timestamp.setMilliseconds(0)
+                reading.timestamp.setSeconds(0)
+                reading.timestamp.setMinutes(0)
             }
         }
 
-        const groupedReadings = _.groupBy(readings, "timestamp");
+        const groupedReadings = _.groupBy(readings, (reading) => reading.timestamp.getTime());
+        const timeSeries = generateTimeSeries(granularity);
 
-        const result = [];
-        for (const key in groupedReadings) {
-            const group = groupedReadings[key];
-            result.push({
-                timestamp: new Date(key),
-                temperature: calculateAverageTemperature(group),
-                ph: calculateAveragePh(group)
-            });
-        }
+        const result = timeSeries.map((timestamp) => {
+            const reading = groupedReadings[timestamp.getTime()];
+            if (reading) {
+                return {
+                    timestamp: timestamp,
+                    temperature: calculateAverageTemperature(reading),
+                    ph: calculateAveragePh(reading)
+                };
+            } else {
+                return {
+                    timestamp: timestamp,
+                    temperature: null,
+                    ph: null
+                };
+            }
+        });
 
         return result.reverse();
     };
@@ -113,12 +150,6 @@ export const getReadings = cache(async (granularity?: string) => {
         }
     }).reverse();
 });
-
-const groupReadingsByGranularity = (readings: Reading[], granularity: string) => {
-
-
-    return groupedReadings;
-};
 
 const calculateAverageTemperature = (readings: Reading[]) => {
     const sum = readings.reduce((total, reading) => total + toFloat(reading.temperature), 0);
