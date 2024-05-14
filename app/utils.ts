@@ -143,7 +143,7 @@ export const saveSettings = async (data: Settings) => {
     await findFirstOrCreateSettings();
     const updatedSettings = await prisma.settings.update({
         where: { id: data.id },
-        data: { flowRateA: data.flowRateA, flowRateB: data.flowRateB, flowRateC: data.flowRateC, flowRateD: data.flowRateD }
+        data
     });
     revalidatePath('/settings')
     return updatedSettings;
@@ -154,7 +154,7 @@ const findFirstOrCreateSettings = async () => {
     const found = await prisma.settings.findFirst();
     if (!found) {
         const newSettings = await prisma.settings.create({
-            data: { flowRateA: 0, flowRateB: 0, flowRateC: 0, flowRateD: 0 }
+            data: { flowRateA: 0, flowRateB: 0, flowRateC: 0, flowRateD: 0, mainVolumeContainer: 0 }
         })
         return newSettings;
     }

@@ -23,11 +23,12 @@ model Info {
 }
 
 model Settings {
-  id        Int @id @default(autoincrement())
-  flowRateA Int
-  flowRateB Int
-  flowRateC Int
-  flowRateD Int
+  id                  Int @id @default(autoincrement())
+  flowRateA           Int
+  flowRateB           Int
+  flowRateC           Int
+  flowRateD           Int
+  mainVolumeContainer Int
 }
 
 model Reading {

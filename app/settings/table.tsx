@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 const SettingsTable: React.FC<{ settings: Settings }> = ({ settings }) => {
     const { register, handleSubmit, formState: { errors } } = useForm<Settings>();
 
-    const handleOnSubmit = async (data: any) => {
+    const handleOnSubmit = async (data: Settings) => {
         await saveSettings(data);
     };
 
@@ -55,6 +55,16 @@ const SettingsTable: React.FC<{ settings: Settings }> = ({ settings }) => {
                         {...register("flowRateD", { required: true, min: 1, max: 100, valueAsNumber: true })}
                     />
                     {errors.flowRateD && <span className="text-red-500">Required (1-100)</span>}
+                </div>
+                <div className="w-1/4">
+                    <label className="block text-center">Main Volume (g)</label>
+                    <input
+                        type="number"
+                        defaultValue={settings.mainVolumeContainer}
+                        className="px-2 py-1 w-full border rounded text-black"
+                        {...register("mainVolumeContainer", { required: true, min: 1, max: 100, valueAsNumber: true })}
+                    />
+                    {errors.mainVolumeContainer && <span className="text-red-500">Required (1-100)</span>}
                 </div>
             </div>
             <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit">
