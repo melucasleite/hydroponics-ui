@@ -77,7 +77,20 @@ export const getReadings = cache(async (granularity?: string) => {
     });
 
     if (granularity === 'second' || granularity === 'minute' || granularity === 'hour') {
-        const groupedReadings = groupReadingsByGranularity(readings, granularity);
+        for (const reading of readings) {
+            if (granularity === 'second') {
+                reading.timestamp.setMilliseconds(0)
+            } else if (granularity === 'minute') {
+                reading.timestamp.setMilliseconds(0)
+                reading.timestamp.setSeconds(0)
+            } else if (granularity === 'hour') {
+                reading.timestamp.setMilliseconds(0)
+                reading.timestamp.setSeconds(0)
+                reading.timestamp.setMinutes(0)
+            }
+        }
+
+        const groupedReadings = _.groupBy(readings, "timestamp");
 
         const result = [];
         for (const key in groupedReadings) {
@@ -88,6 +101,7 @@ export const getReadings = cache(async (granularity?: string) => {
                 ph: calculateAveragePh(group)
             });
         }
+
         return result.reverse();
     };
 
@@ -101,20 +115,7 @@ export const getReadings = cache(async (granularity?: string) => {
 });
 
 const groupReadingsByGranularity = (readings: Reading[], granularity: string) => {
-    for (const reading of readings) {
-        if (granularity === 'second') {
-            reading.timestamp.setMilliseconds(0)
-        } else if (granularity === 'minute') {
-            reading.timestamp.setMilliseconds(0)
-            reading.timestamp.setSeconds(0)
-        } else if (granularity === 'hour') {
-            reading.timestamp.setMilliseconds(0)
-            reading.timestamp.setSeconds(0)
-            reading.timestamp.setMinutes(0)
-        }
-    }
 
-    const groupedReadings = _.groupBy(readings, "timestamp");
 
     return groupedReadings;
 };
