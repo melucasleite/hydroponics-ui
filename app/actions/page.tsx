@@ -35,7 +35,7 @@ const Actions: React.FC = async () => {
           {actions.map((action, index) => (
             action.weeklyParts.map((part, partIndex) => (
               <tr key={`${index}-${partIndex}`}>
-                <td className="py-2 px-4 border-b">{partIndex}</td>
+                <td className="py-2 px-4 border-b">{partIndex + 1}</td>
                 <td className="py-2 px-4 border-b">{part.volumeA}</td>
                 <td className="py-2 px-4 border-b">{part.volumeB}</td>
                 <td className="py-2 px-4 border-b">{part.volumeC}</td>

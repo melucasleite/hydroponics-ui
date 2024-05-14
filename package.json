@@ -17,6 +17,7 @@
     "bun": "^1.1.8",
     "chart.js": "^4.4.2",
     "esrun": "^3.2.26",
+    "lodash": "^4.17.21",
     "next": "14.2.3",
     "react": "^18",
     "react-chartjs-2": "^5.2.0",
@@ -26,6 +27,7 @@
     "swr": "^2.2.5"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.1",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

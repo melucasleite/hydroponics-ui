@@ -3,6 +3,7 @@ import { PrismaClient, Settings, Info, Reading, Prisma } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import { revalidatePath } from "next/cache";
 import { cache } from "react";
+import _ from "lodash"
 
 const prisma = new PrismaClient()
 
@@ -77,48 +78,43 @@ export const getReadings = cache(async (granularity?: string) => {
 
     if (granularity === 'second' || granularity === 'minute' || granularity === 'hour') {
         const groupedReadings = groupReadingsByGranularity(readings, granularity);
-        return groupedReadings.map((group) => {
-            const averageTemperature = calculateAverageTemperature(group);
-            const averagePh = calculateAveragePh(group);
-            return { ph: averagePh, temperature: averageTemperature, timestamp: group[0].timestamp };
-        });
-    }
+
+        const result = [];
+        for (const key in groupedReadings) {
+            const group = groupedReadings[key];
+            result.push({
+                timestamp: new Date(key),
+                temperature: calculateAverageTemperature(group),
+                ph: calculateAveragePh(group)
+            });
+        }
+        return result.reverse();
+    };
 
     return readings.map((reading) => {
-        return { ...reading, temperature: toFloat(reading.temperature), ph: toFloat(reading.ph) };
-    });
+        return {
+            ...reading,
+            temperature: toFloat(reading.temperature),
+            ph: toFloat(reading.ph)
+        }
+    }).reverse();
 });
 
 const groupReadingsByGranularity = (readings: Reading[], granularity: string) => {
-    const groupedReadings: any[] = [];
-    let group: any[] = [];
-    let currentTimestamp: Date | null = null;
-
     for (const reading of readings) {
-        if (!currentTimestamp) {
-            currentTimestamp = reading.timestamp;
+        if (granularity === 'second') {
+            reading.timestamp.setMilliseconds(0)
+        } else if (granularity === 'minute') {
+            reading.timestamp.setMilliseconds(0)
+            reading.timestamp.setSeconds(0)
+        } else if (granularity === 'hour') {
+            reading.timestamp.setMilliseconds(0)
+            reading.timestamp.setSeconds(0)
+            reading.timestamp.setMinutes(0)
         }
-
-        if (granularity === 'second' && reading.timestamp.getSeconds() !== currentTimestamp?.getSeconds()) {
-            groupedReadings.push(group);
-            group = [];
-            currentTimestamp = reading.timestamp;
-        } else if (granularity === 'minute' && reading.timestamp.getMinutes() !== currentTimestamp?.getMinutes()) {
-            groupedReadings.push(group);
-            group = [];
-            currentTimestamp = reading.timestamp;
-        } else if (granularity === 'hour' && reading.timestamp.getHours() !== currentTimestamp?.getHours()) {
-            groupedReadings.push(group);
-            group = [];
-            currentTimestamp = reading.timestamp;
-        }
-
-        group.push(reading);
     }
 
-    if (group.length > 0) {
-        groupedReadings.push(group);
-    }
+    const groupedReadings = _.groupBy(readings, "timestamp");
 
     return groupedReadings;
 };

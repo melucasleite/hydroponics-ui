@@ -1,15 +1,15 @@
 import React, { useEffect } from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement } from "chart.js";
 import { Line } from "react-chartjs-2";
-import { HIGH_PH_THRESHOLD, HIGH_TEMP_THRESHOLD, LOW_PH_THRESHOLD, LOW_TEMP_THRESHOLD } from "./constants";
-import { getReadings, seedReadings } from "./utils";
+import { HIGH_PH_THRESHOLD, HIGH_TEMP_THRESHOLD, LOW_PH_THRESHOLD, LOW_TEMP_THRESHOLD } from "../constants";
+import { getReadings, seedReadings } from "../utils";
 import { Reading } from "@prisma/client";
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement);
 
 type parsedReading = Omit<Reading, 'temperature' | 'id' | 'ph'> & {
-    temperature: number;
-    ph: number;
+    temperature: number | null;
+    ph: number | null;
 };
 
 const HistoryChart = () => {
@@ -22,25 +22,25 @@ const HistoryChart = () => {
     };
 
     React.useEffect(() => {
-        const interval = setInterval(fetchInfo, 1000);
+        const interval = setInterval(fetchInfo, 5000);
         return () => {
             clearInterval(interval);
         };
     }, [granularity]);
 
-    const points = readings.slice(0, 100).sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
     const lowTemp = LOW_TEMP_THRESHOLD;
     const highTemp = HIGH_TEMP_THRESHOLD;
 
     const lowPh = LOW_PH_THRESHOLD;
     const highPh = HIGH_PH_THRESHOLD;
 
+
     const temperatureData = {
-        labels: points.map((reading) => new Date(reading.timestamp).toLocaleTimeString()),
+        labels: readings.map((reading) => new Date(reading.timestamp).toLocaleTimeString()),
         datasets: [
             {
                 label: "Temperature",
-                data: points.map((reading) => reading.temperature),
+                data: readings.map((reading) => reading.temperature),
                 fill: true,
                 backgroundColor: "rgba(75,192,192,0.2)",
                 borderColor: "rgba(30,142,255)",
@@ -51,7 +51,7 @@ const HistoryChart = () => {
             },
             {
                 label: "Lower Threshold",
-                data: Array(points.length).fill(lowTemp),
+                data: Array(readings.length).fill(lowTemp),
                 fill: false,
                 borderColor: "rgba(255,0,0,1)",
                 borderDash: [5, 5],
@@ -59,7 +59,7 @@ const HistoryChart = () => {
             },
             {
                 label: "Upper Threshold",
-                data: Array(points.length).fill(highTemp),
+                data: Array(readings.length).fill(highTemp),
                 fill: false,
                 borderColor: "rgba(255,0,0,1)",
                 borderDash: [5, 5],
@@ -68,12 +68,14 @@ const HistoryChart = () => {
         ],
     };
 
+    console.log(temperatureData)
+
     const phData = {
-        labels: points.map((reading) => new Date(reading.timestamp).toLocaleTimeString()),
+        labels: readings.map((reading) => new Date(reading.timestamp).toLocaleTimeString()),
         datasets: [
             {
                 label: "PH",
-                data: points.map((reading) => reading.ph),
+                data: readings.map((reading) => reading.ph),
                 fill: true,
                 backgroundColor: "rgba(75,192,192,0.2)",
                 borderColor: "rgba(30,142,255)",
@@ -84,7 +86,7 @@ const HistoryChart = () => {
             },
             {
                 label: "Lower Threshold",
-                data: Array(points.length).fill(lowPh),
+                data: Array(readings.length).fill(lowPh),
                 fill: false,
                 borderColor: "rgba(255,0,0,1)",
                 borderDash: [5, 5],
@@ -92,7 +94,7 @@ const HistoryChart = () => {
             },
             {
                 label: "Upper Threshold",
-                data: Array(points.length).fill(highPh),
+                data: Array(readings.length).fill(highPh),
                 fill: false,
                 borderColor: "rgba(255,0,0,1)",
                 borderDash: [5, 5],
@@ -100,8 +102,6 @@ const HistoryChart = () => {
             },
         ],
     };
-
-    console.log(phData)
 
     if (readings.length === 0) {
         return (

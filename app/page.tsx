@@ -1,7 +1,7 @@
 "use client"
 import React from 'react';
 import { getInfo } from './utils';
-import HistoryChart from './history';
+import HistoryChart from './components/history';
 import PageLayout from './components/pageLayout';
 
 interface WaterLevelProps {
