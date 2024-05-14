@@ -62,11 +62,7 @@ parser.on('data', readAndInsert);
 async function insertReading(temperature: number, ph: number) {
     console.log('Inserting reading:', { temperature, ph });
     const now = new Date();
-    const date = new Date();
-    date.setHours(0)
-    date.setMinutes(0)
-    date.setSeconds(0)
-    date.setMilliseconds(0)
+    const date = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0));
     const hour = now.getUTCHours();
     const minute = now.getUTCMinutes();
     const second = now.getUTCSeconds();
