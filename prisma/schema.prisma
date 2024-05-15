@@ -32,10 +32,11 @@ model Settings {
 }
 
 model Reading {
-  id          Int      @id @default(autoincrement())
-  timestamp   DateTime @default(now())
-  temperature Decimal  @db.Decimal(5, 2)
-  ph          Decimal  @db.Decimal(5, 2)
+  id             Int      @id @default(autoincrement())
+  timestamp      DateTime @default(now())
+  waterSensorA0  Decimal  @default(-1) @db.Decimal(5, 2)
+  temperature    Decimal  @db.Decimal(5, 2)
+  ph             Decimal  @db.Decimal(5, 2)
 }
 
 model Schedule {

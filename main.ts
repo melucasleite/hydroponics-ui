@@ -52,21 +52,23 @@ const readAndInsert = (data: string) => {
     console.log('Parsed readings:', readings);
     const temperatureRaw = readings.find((reading) => reading.port === 'T1')?.value;
     const phRaw = readings.find((reading) => reading.port === 'A1')?.value;
-    if (temperatureRaw !== undefined && phRaw !== undefined)
-        insertReading(temperatureRaw / 10, convertToVolts(phRaw));
+    const waterSensorA0 = readings.find((reading) => reading.port === 'A0')?.value;
+    if (temperatureRaw !== undefined && phRaw !== undefined && waterSensorA0 !== undefined)
+        insertReading(temperatureRaw / 10, convertToVolts(phRaw), convertToVolts(waterSensorA0));
     else
         console.error('Invalid readings');
 }
 
 parser.on('data', readAndInsert);
 
-async function insertReading(temperature: number, ph: number, retryCount = 10): Promise<void> {
+async function insertReading(temperature: number, ph: number, waterSensorA0: number, retryCount = 10): Promise<void> {
     console.log('Inserting reading:', { temperature, ph });
     try {
         await prisma.reading.create({
             data: {
                 temperature,
                 ph,
+                waterSensorA0
             },
         });
     } catch (error) {
