@@ -48,7 +48,6 @@ export type Granularity = 'second' | 'minute' | 'hour' | 'day';
 
 export const getReadings = cache(async (granularity: Granularity, window: string) => {
     let result: { interval: Date, reading_count: number, avg_temperature: Decimal | null, avg_ph: Decimal | null }[] = [];
-    console.log(window)
     result = await prisma.$queryRawUnsafe(`
         WITH intervals AS (
             SELECT generate_series(
