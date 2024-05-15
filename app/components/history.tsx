@@ -1,7 +1,7 @@
 "use client"
 import React, { FC, useEffect } from "react";
-import { HIGH_PH_THRESHOLD, HIGH_TEMP_THRESHOLD, LOW_PH_THRESHOLD, LOW_TEMP_THRESHOLD } from "../constants";
-import { Granularity, getReadings, validWindows } from "../utils";
+import { HIGH_PH_THRESHOLD, HIGH_TEMP_THRESHOLD, LOW_PH_THRESHOLD, LOW_TEMP_THRESHOLD, validWindows } from "../constants";
+import { Granularity, getReadings } from "../utils";
 import { getChartData } from "./historyUtils";
 import { LineChart } from "./lineChart";
 import { TooltipItem, TooltipModel } from "chart.js";
@@ -27,7 +27,6 @@ const HistoryChart: FC<IHistoryChart> = ({ poolingInterval }) => {
     const granularityRef = React.useRef(granularity);
     const windowRef = React.useRef(window);
     const timeoutIdRef = React.useRef<NodeJS.Timeout | null>(null); // Use a ref to hold the timeout id
-
     useEffect(() => {
         fetchInfo();
         return () => {

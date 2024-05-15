@@ -2,7 +2,6 @@
 import React from 'react';
 import { getInfo } from './utils';
 import HistoryChart from './components/history';
-import PageLayout from './components/pageLayout';
 
 interface WaterLevelProps {
     level: boolean;

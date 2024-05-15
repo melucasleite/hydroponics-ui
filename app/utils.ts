@@ -4,6 +4,7 @@ import { Decimal } from "@prisma/client/runtime/library";
 import { revalidatePath } from "next/cache";
 import { cache } from "react";
 import _ from "lodash"
+import { validWindows } from "./constants";
 
 const prisma = new PrismaClient()
 
@@ -45,13 +46,6 @@ export const deleteSchedule = async (id: number) => {
 }
 
 export type Granularity = 'second' | 'minute' | 'hour' | 'day';
-
-export const validWindows = {
-    second: ["1 minute", "5 minutes"],
-    minute: ["1 hour", "6 hours"],
-    hour: ["1 day", "7 days"],
-    day: ["7 days", "30 days"],
-};
 
 export const getReadings = cache(async (granularity: Granularity, window: string) => {
     type QueryResult = {
