@@ -1,6 +1,7 @@
 import { SerialPort } from 'serialport';
 import { ReadlineParser } from '@serialport/parser-readline';
 import { PrismaClient } from "@prisma/client";
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 const prisma = new PrismaClient();
 
@@ -59,14 +60,24 @@ const readAndInsert = (data: string) => {
 
 parser.on('data', readAndInsert);
 
-async function insertReading(temperature: number, ph: number) {
+async function insertReading(temperature: number, ph: number, retryCount = 10): Promise<void> {
     console.log('Inserting reading:', { temperature, ph });
-    await prisma.reading.create({
-        data: {
-            temperature,
-            ph,
-        },
-    });
+    try {
+        await prisma.reading.create({
+            data: {
+                temperature,
+                ph,
+            },
+        });
+    } catch (error) {
+        if (error instanceof PrismaClientKnownRequestError && retryCount > 0) {
+            console.log(`Error inserting reading. Retrying... (${retryCount} attempts left)`);
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            await insertReading(temperature, ph, retryCount - 1);
+        } else {
+            console.error('Failed to insert reading:', error);
+        }
+    }
 }
 
 const map = (value: number, inMin: number, inMax: number, outMin: number, outMax: number): number => {
