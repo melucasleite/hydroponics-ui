@@ -47,7 +47,7 @@ export const deleteSchedule = async (id: number) => {
 export type Granularity = 'second' | 'minute' | 'hour' | 'day';
 
 export const getReadings = cache(async (granularity: Granularity) => {
-    let result: { interval: Date, avg_temperature: Decimal | null, avg_ph: Decimal | null }[] = [];
+    let result: { interval: Date, reading_count: number, avg_temperature: Decimal | null, avg_ph: Decimal | null }[] = [];
     switch (granularity) {
         case 'second':
             result = await prisma.$queryRaw`
@@ -60,6 +60,7 @@ export const getReadings = cache(async (granularity: Granularity) => {
                 )
                 SELECT 
                     intervals.interval,
+                    COUNT("Reading".id) AS reading_count,
                     AVG("Reading".temperature) AS avg_temperature,
                     AVG("Reading".ph) AS avg_ph
                 FROM 
@@ -83,6 +84,7 @@ export const getReadings = cache(async (granularity: Granularity) => {
                 )
                 SELECT 
                     intervals.interval,
+                    COUNT("Reading".id) AS reading_count,
                     AVG("Reading".temperature) AS avg_temperature,
                     AVG("Reading".ph) AS avg_ph
                 FROM 
@@ -106,6 +108,7 @@ export const getReadings = cache(async (granularity: Granularity) => {
                 )
                 SELECT 
                     intervals.interval,
+                    COUNT("Reading".id) AS reading_count,
                     AVG("Reading".temperature) AS avg_temperature,
                     AVG("Reading".ph) AS avg_ph
                 FROM 
@@ -129,6 +132,7 @@ export const getReadings = cache(async (granularity: Granularity) => {
                 )
                 SELECT 
                     intervals.interval,
+                    COUNT("Reading".id) AS reading_count,
                     AVG("Reading".temperature) AS avg_temperature,
                     AVG("Reading".ph) AS avg_ph
                 FROM 
@@ -144,8 +148,10 @@ export const getReadings = cache(async (granularity: Granularity) => {
         default:
             throw new Error(`Invalid granularity: ${granularity}`);
     }
-    return result.map((reading: any) => {
+
+    return result.map((reading) => {
         return {
+            reading_count: reading.reading_count,
             interval: reading.interval,
             temperature: reading.avg_temperature ? toFloat(reading.avg_temperature) : null,
             ph: reading.avg_ph ? toFloat(reading.avg_ph) : null

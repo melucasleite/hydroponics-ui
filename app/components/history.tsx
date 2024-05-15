@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect } from "react";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement } from "chart.js";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, TooltipModel, TooltipItem } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { HIGH_PH_THRESHOLD, HIGH_TEMP_THRESHOLD, LOW_PH_THRESHOLD, LOW_TEMP_THRESHOLD } from "../constants";
 import { Granularity, getReadings } from "../utils";
@@ -8,6 +8,7 @@ import { Granularity, getReadings } from "../utils";
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement);
 
 type ParsedReading = {
+    reading_count: number;
     interval: Date;
     temperature: number | null;
     ph: number | null;
@@ -36,9 +37,7 @@ const HistoryChart = () => {
     }, [granularity]);
 
     const fetchInfo = async () => {
-        console.log('fetchInfo');
         const data = await getReadings(granularityRef.current);
-        console.log(data)
         setReadings(data);
         timeoutIdRef.current = setTimeout(fetchInfo, poolingInterval[granularityRef.current]);
     };
@@ -85,7 +84,7 @@ const HistoryChart = () => {
                 borderDash: [5, 5],
                 pointRadius: 0,
             },
-        ],
+        ]
     };
 
     const phData = {
@@ -121,6 +120,13 @@ const HistoryChart = () => {
         ],
     };
 
+    function footer(this: TooltipModel<"line">, tooltipItems: TooltipItem<"line">[]): string | void | string[] {
+        const item = tooltipItems[0];
+        if (item) {
+            const value = readings[item.dataIndex].reading_count;
+            return `Readings: ${value}`;
+        }
+    }
     return (
         <div className="mt-2">
             <div className="flex gap-2 mb-2">
@@ -160,6 +166,12 @@ const HistoryChart = () => {
                                 color: 'rgba(255,255,255,0.2)',
                             },
                         }
+                    }, plugins: {
+                        tooltip: {
+                            callbacks: {
+                                footer,
+                            }
+                        }
                     }
                 }} />
             </div>
@@ -174,6 +186,12 @@ const HistoryChart = () => {
                                 color: 'rgba(255,255,255,0.2)',
                             },
                         },
+                    }, plugins: {
+                        tooltip: {
+                            callbacks: {
+                                footer,
+                            }
+                        }
                     }
                 }} />
             </div>
