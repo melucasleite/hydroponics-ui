@@ -41,7 +41,9 @@ export async function downsampleReadings(prisma: PrismaClient) {
 
   console.log('Finished updating readings.');
   console.log('Deleting old readings...');
-  await prisma.$executeRawUnsafe(`
+
+  // log how many readings are being deleted
+  const rowCount = await prisma.$executeRawUnsafe(`
       WITH readings_to_keep AS (
         SELECT 
           MIN(id) as min_id
@@ -52,6 +54,8 @@ export async function downsampleReadings(prisma: PrismaClient) {
       DELETE FROM "Reading"
       WHERE timestamp <= $1 AND id NOT IN (SELECT min_id FROM readings_to_keep);
     `, twoDaysAgo);
+
+  console.log(`Deleted ${rowCount} readings.`);
 
   console.log('Finished downsampleReadings.');
 }
