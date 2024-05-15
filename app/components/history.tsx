@@ -39,7 +39,7 @@ const HistoryChart = () => {
     const fetchInfo = async () => {
         const data = await getReadings(granularityRef.current);
         setReadings(data);
-        timeoutIdRef.current = setTimeout(fetchInfo, poolingInterval[granularityRef.current]);
+        timeoutIdRef.current = setTimeout(fetchInfo, 1000);
     };
 
     useEffect(() => {
