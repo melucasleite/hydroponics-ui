@@ -1,12 +1,11 @@
 'use server'
-import { PrismaClient, Settings, Info, Reading, Prisma } from "@prisma/client";
+import { Settings } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import { revalidatePath } from "next/cache";
 import { cache } from "react";
 import _ from "lodash"
 import { validWindows } from "./constants";
-
-const prisma = new PrismaClient()
+import prisma from "@/client";
 
 export const getSettings = cache(async () => {
     return findFirstOrCreateSettings();
