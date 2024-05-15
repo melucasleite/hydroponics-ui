@@ -4,6 +4,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import PageLayout from "./components/pageLayout";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,6 +26,7 @@ export default function RootLayout({
         <body className={inter.className}>
           <PageLayout>
             {children}
+            <SpeedInsights />
           </PageLayout>
         </body>
       </html>

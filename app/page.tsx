@@ -41,6 +41,8 @@ const TemperatureLevel: React.FC<TemperatureLevelProps> = ({ temperature, label 
     );
 };
 
+const poolingInterval = 1000;
+
 const Info: React.FC = () => {
     const [info, setInfo] = React.useState<any>(null);
 
@@ -50,7 +52,7 @@ const Info: React.FC = () => {
             setInfo(data);
         };
 
-        const interval = setInterval(fetchInfo, 1000);
+        const interval = setInterval(fetchInfo, poolingInterval);
 
         return () => {
             clearInterval(interval);
@@ -72,7 +74,7 @@ const Info: React.FC = () => {
                 <WaterLevel level={lowWaterD} label="Water Level D" />
                 <TemperatureLevel temperature={temperature} label={`Temperature: ${temperature}°C`} />
             </div>
-            <HistoryChart />
+            <HistoryChart poolingInterval={poolingInterval} />
         </div>
     );
 };

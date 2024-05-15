@@ -46,109 +46,31 @@ export const deleteSchedule = async (id: number) => {
 
 export type Granularity = 'second' | 'minute' | 'hour' | 'day';
 
-export const getReadings = cache(async (granularity: Granularity) => {
+export const getReadings = cache(async (granularity: Granularity, window: string) => {
     let result: { interval: Date, reading_count: number, avg_temperature: Decimal | null, avg_ph: Decimal | null }[] = [];
-    switch (granularity) {
-        case 'second':
-            result = await prisma.$queryRaw`
-                WITH intervals AS (
-                    SELECT generate_series(
-                        date_trunc('second', NOW()),
-                        date_trunc('second', NOW()) - INTERVAL '1 minutes',
-                        INTERVAL '-1 second'
-                    ) AS interval
-                )
-                SELECT 
-                    intervals.interval,
-                    COUNT("Reading".id) AS reading_count,
-                    AVG("Reading".temperature) AS avg_temperature,
-                    AVG("Reading".ph) AS avg_ph
-                FROM 
-                    intervals
-                LEFT JOIN 
-                    "Reading" ON date_trunc('second', "Reading".timestamp) = intervals.interval
-                GROUP BY 
-                    intervals.interval
-                ORDER BY 
-                    intervals.interval DESC;
-            `;
-            break;
-        case 'minute':
-            result = await prisma.$queryRaw`
-                WITH intervals AS (
-                    SELECT generate_series(
-                        date_trunc('minute', NOW()),
-                        date_trunc('minute', NOW()) - INTERVAL '1 hour',
-                        INTERVAL '-1 minute'
-                    ) AS interval
-                )
-                SELECT 
-                    intervals.interval,
-                    COUNT("Reading".id) AS reading_count,
-                    AVG("Reading".temperature) AS avg_temperature,
-                    AVG("Reading".ph) AS avg_ph
-                FROM 
-                    intervals
-                LEFT JOIN 
-                    "Reading" ON date_trunc('minute', "Reading".timestamp) = intervals.interval
-                GROUP BY 
-                    intervals.interval
-                ORDER BY 
-                    intervals.interval DESC;
-                `
-            break;
-        case 'hour':
-            result = await prisma.$queryRaw`
-                WITH intervals AS (
-                    SELECT generate_series(
-                        date_trunc('hour', NOW()),
-                        date_trunc('hour', NOW()) - INTERVAL '2 days',
-                        INTERVAL '-1 hour'
-                    ) AS interval
-                )
-                SELECT 
-                    intervals.interval,
-                    COUNT("Reading".id) AS reading_count,
-                    AVG("Reading".temperature) AS avg_temperature,
-                    AVG("Reading".ph) AS avg_ph
-                FROM 
-                    intervals
-                LEFT JOIN 
-                    "Reading" ON date_trunc('hour', "Reading".timestamp) = intervals.interval
-                GROUP BY 
-                    intervals.interval
-                ORDER BY 
-                    intervals.interval DESC;
-            `
-            break;
-        case 'day':
-            result = await prisma.$queryRaw`
-                WITH intervals AS (
-                    SELECT generate_series(
-                        date_trunc('day', NOW()),
-                        date_trunc('day', NOW()) - INTERVAL '6 days',
-                        INTERVAL '-1 day'
-                    ) AS interval
-                )
-                SELECT 
-                    intervals.interval,
-                    COUNT("Reading".id) AS reading_count,
-                    AVG("Reading".temperature) AS avg_temperature,
-                    AVG("Reading".ph) AS avg_ph
-                FROM 
-                    intervals
-                LEFT JOIN 
-                    "Reading" ON date_trunc('day', "Reading".timestamp) = intervals.interval
-                GROUP BY 
-                    intervals.interval
-                ORDER BY 
-                    intervals.interval DESC;
-            `
-            break;
-        default:
-            throw new Error(`Invalid granularity: ${granularity}`);
-    }
-
+    console.log(window)
+    result = await prisma.$queryRawUnsafe(`
+        WITH intervals AS (
+            SELECT generate_series(
+                date_trunc('${granularity}', NOW()),
+                date_trunc('${granularity}', NOW()) - INTERVAL '${window}',
+                INTERVAL '-1 ${granularity}'
+            ) AS interval
+        )
+        SELECT 
+            intervals.interval,
+            COUNT("Reading".id) AS reading_count,
+            AVG("Reading".temperature) AS avg_temperature,
+            AVG("Reading".ph) AS avg_ph
+        FROM 
+            intervals
+        LEFT JOIN 
+            "Reading" ON date_trunc('${granularity}', "Reading".timestamp) = intervals.interval
+        GROUP BY 
+            intervals.interval
+        ORDER BY 
+            intervals.interval DESC;
+    `);
     return result.map((reading) => {
         return {
             reading_count: reading.reading_count,
