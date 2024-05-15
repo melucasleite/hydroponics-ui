@@ -46,9 +46,26 @@ export const deleteSchedule = async (id: number) => {
 
 export type Granularity = 'second' | 'minute' | 'hour' | 'day';
 
+export const validWindows = {
+    second: ["1 minute", "5 minutes"],
+    minute: ["1 hour", "6 hours"],
+    hour: ["1 day", "7 days"],
+    day: ["7 days", "30 days"],
+};
+
 export const getReadings = cache(async (granularity: Granularity, window: string) => {
-    let result: { interval: Date, reading_count: number, avg_temperature: Decimal | null, avg_ph: Decimal | null }[] = [];
-    result = await prisma.$queryRawUnsafe(`
+    type QueryResult = {
+        interval: Date;
+        reading_count: number;
+        avg_temperature: Decimal | null;
+        avg_ph: Decimal | null;
+    };
+
+    if (validWindows[granularity].indexOf(window) === -1) {
+        throw new Error(`Invalid window for granularity ${granularity}: ${window}`);
+    }
+
+    const result: QueryResult[] = await prisma.$queryRawUnsafe(`
         WITH intervals AS (
             SELECT generate_series(
                 date_trunc('${granularity}', NOW()),

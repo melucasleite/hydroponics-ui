@@ -1,7 +1,7 @@
 "use client"
 import React, { FC, useEffect } from "react";
 import { HIGH_PH_THRESHOLD, HIGH_TEMP_THRESHOLD, LOW_PH_THRESHOLD, LOW_TEMP_THRESHOLD } from "../constants";
-import { Granularity, getReadings } from "../utils";
+import { Granularity, getReadings, validWindows } from "../utils";
 import { getChartData } from "./historyUtils";
 import { LineChart } from "./lineChart";
 import { TooltipItem, TooltipModel } from "chart.js";
@@ -13,12 +13,6 @@ type ParsedReading = {
     ph: number | null;
 };
 
-const windowByGranularityMap = {
-    second: ["1 minute", "5 minutes"],
-    minute: ["1 hour", "6 hours"],
-    hour: ["1 day", "7 days"],
-    day: ["7 days", "30 days"],
-};
 
 const granularityList: Granularity[] = ['second', 'minute', 'hour', 'day'];
 
@@ -29,7 +23,7 @@ interface IHistoryChart {
 const HistoryChart: FC<IHistoryChart> = ({ poolingInterval }) => {
     const [readings, setReadings] = React.useState<ParsedReading[]>([]);
     const [granularity, setGranularity] = React.useState<Granularity>(granularityList[0]);
-    const [window, setWindow] = React.useState(windowByGranularityMap[granularity][0]); // Default to the first window in the list
+    const [window, setWindow] = React.useState(validWindows[granularity][0]); // Default to the first window in the list
     const granularityRef = React.useRef(granularity);
     const windowRef = React.useRef(window);
     const timeoutIdRef = React.useRef<NodeJS.Timeout | null>(null); // Use a ref to hold the timeout id
@@ -51,8 +45,8 @@ const HistoryChart: FC<IHistoryChart> = ({ poolingInterval }) => {
 
     useEffect(() => {
         granularityRef.current = granularity;
-        windowRef.current = windowByGranularityMap[granularity][0];
-        setWindow(windowByGranularityMap[granularity][0]);
+        windowRef.current = validWindows[granularity][0];
+        setWindow(validWindows[granularity][0]);
     }, [granularity]);
 
 
@@ -91,7 +85,7 @@ const HistoryChart: FC<IHistoryChart> = ({ poolingInterval }) => {
                     </button>
                 ))}
                 <select className="p-2 border-2 rounded bg-black" onChange={(e) => setWindow(e.target.value)}   >
-                    {windowByGranularityMap[granularity].map((w) => (
+                    {validWindows[granularity].map((w) => (
                         <option key={w} value={w} selected={w === window}>{w}</option>
                     ))}
                 </select>
