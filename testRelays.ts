@@ -29,7 +29,10 @@ const parser = port.pipe(new ReadlineParser({ delimiter: '\n' }));
 console.log("Testing relays...")
 
 setTimeout(() => {
-    port.write('test\n');
+    // how many elements are in this array?
+    [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24].forEach(i => {
+        port.write(`U${i}\n`);
+    })
 }, 1000)
 
 const log = (data: string) => {
