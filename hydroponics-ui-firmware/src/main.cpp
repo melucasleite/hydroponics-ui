@@ -42,19 +42,19 @@ void loop()
       readings += "-T1V" + String(int(tempC * 10)) + "\n";
       Serial.print(readings);
     }
-    else if (command.startsWith("H"))
-    {
-      int relayPin = command.substring(1).toInt();
-      pinMode(relayPin, OUTPUT);
-      digitalWrite(relayPin, HIGH);
-      lastUpTime[relayPin] = millis(); // Update the last "U" time for this pin
-      Serial.print("Relay " + String(relayPin) + " is ON" + "\n");
-    }
-    else if (command.startsWith("L"))
+    else if (command.startsWith("U"))
     {
       int relayPin = command.substring(1).toInt();
       pinMode(relayPin, OUTPUT);
       digitalWrite(relayPin, LOW);
+      lastUpTime[relayPin] = millis(); // Update the last "U" time for this pin
+      Serial.print("Relay " + String(relayPin) + " is ON" + "\n");
+    }
+    else if (command.startsWith("D"))
+    {
+      int relayPin = command.substring(1).toInt();
+      pinMode(relayPin, OUTPUT);
+      digitalWrite(relayPin, HIGH);
       Serial.print("Relay " + String(relayPin) + " is ON" + "\n");
     }
   }
