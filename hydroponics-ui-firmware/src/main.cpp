@@ -12,7 +12,7 @@ int delayTime = 5000;
 void setup()
 {
   Serial.begin(115200);
-  for (int i = 0; i <= 53; i++)
+  for (int i = 0; i <= 52; i++)
   {
     lastUTime[i] = 0; // Initialize the last "U" time to 0 for each pin
   }
