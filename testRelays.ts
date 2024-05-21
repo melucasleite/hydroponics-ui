@@ -28,7 +28,7 @@ const parser = port.pipe(new ReadlineParser({ delimiter: '\n' }));
 
 console.log("Testing relays...")
 
-port.write('testRelays\n');
+port.write('test\n');
 
 const log = (data: string) => {
     console.log('Received data:', data);
