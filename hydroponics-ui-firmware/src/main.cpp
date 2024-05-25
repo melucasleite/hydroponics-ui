@@ -8,6 +8,7 @@ DallasTemperature sensors(&oneWire);
 
 unsigned long lastUpTime[53]; // Array to store the last time a "U" command was received for each pin
 int delayTime = 5000;
+bool debug = true; // Debug variable
 
 void setup()
 {
@@ -48,14 +49,20 @@ void loop()
       pinMode(relayPin, OUTPUT);
       digitalWrite(relayPin, LOW);
       lastUpTime[relayPin] = millis(); // Update the last "U" time for this pin
-      Serial.print("Relay " + String(relayPin) + " is ON" + "\n");
+      if (debug)
+      {
+        Serial.print("Relay " + String(relayPin) + " is ON" + "\n");
+      }
     }
     else if (command.startsWith("D"))
     {
       int relayPin = command.substring(1).toInt();
       pinMode(relayPin, OUTPUT);
       digitalWrite(relayPin, HIGH);
-      Serial.print("Relay " + String(relayPin) + " is ON" + "\n");
+      if (debug)
+      {
+        Serial.print("Relay " + String(relayPin) + " is OFF" + "\n");
+      }
     }
   }
 
@@ -65,6 +72,10 @@ void loop()
     {
       pinMode(i, OUTPUT);
       digitalWrite(i, HIGH);
+      if (debug)
+      {
+        Serial.print("Relay " + String(i) + " is OFF" + "\n");
+      }
     }
   }
 }
