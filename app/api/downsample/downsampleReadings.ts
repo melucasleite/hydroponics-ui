@@ -60,4 +60,6 @@ export async function downsampleReadings(prisma: PrismaClient) {
   taskLogger.info(`Deleted ${rowCount} readings.`, { deletedRows: rowCount });
 
   taskLogger.info('Finished.');
+
+  await logger.flush();
 }
