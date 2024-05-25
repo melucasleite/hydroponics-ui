@@ -61,5 +61,5 @@ export async function downsampleReadings(prisma: PrismaClient) {
 
   taskLogger.info('Finished.');
 
-  await logger.flush();
+  await taskLogger.flush();
 }
