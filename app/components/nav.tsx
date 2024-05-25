@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react';
 
-import { AdjustmentsVerticalIcon, PlayCircleIcon, CalendarDaysIcon, MagnifyingGlassPlusIcon } from "@heroicons/react/20/solid";
+import { AdjustmentsVerticalIcon, PlayCircleIcon, CalendarDaysIcon } from "@heroicons/react/20/solid";
 import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 
 const Nav: React.FC = () => {

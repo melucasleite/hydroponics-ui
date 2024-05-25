@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "@/client";
 
 const splitReadings = async () => {
     const readings = await prisma.reading.findMany();

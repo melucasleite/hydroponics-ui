@@ -1,9 +1,7 @@
 import { SerialPort } from 'serialport';
 import { ReadlineParser } from '@serialport/parser-readline';
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/client";
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-
-const prisma = new PrismaClient();
 
 const convertToVolts = (value: number) => {
     return (value * 5 / 1023);

@@ -4,8 +4,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import PageLayout from "./components/pageLayout";
-import { SpeedInsights } from "@vercel/speed-insights/next"
-import { Analytics } from "@vercel/analytics/react"
+import { AxiomWebVitals } from 'next-axiom';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,11 +23,10 @@ export default function RootLayout({
       baseTheme: dark
     }}>
       <html lang="en">
+        <AxiomWebVitals />
         <body className={inter.className}>
           <PageLayout>
             {children}
-            <SpeedInsights />
-            <Analytics />
           </PageLayout>
         </body>
       </html>
