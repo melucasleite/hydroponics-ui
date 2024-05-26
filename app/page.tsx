@@ -1,13 +1,12 @@
 "use client"
-import React from 'react';
-import Image from 'next/image';
+import React, { HtmlHTMLAttributes, ReactNode } from 'react';
 
 import { getInfo } from '@/app/utils';
 import { HistoryChart } from '@/app/components/history';
 import { Card } from '@/app/components/card';
-import water from '@/public/water.svg'
-import waterUp from '@/public/water-up.svg'
-import waterDown from '@/public/water-down.svg'
+import Water from '@/public/water.svg'
+import WaterUp from '@/public/water-up.svg'
+import WaterDown from '@/public/water-down.svg'
 import { Info as IInfo } from '@prisma/client';
 
 
@@ -16,17 +15,29 @@ interface WaterLevelProps {
 }
 
 const WaterLevel: React.FC<WaterLevelProps> = ({ level }) => {
-    const imageMap = {
-        LOW: waterDown,
-        NORMAL: water,
-        HIGH: waterUp
+    const ImageMap = {
+        LOW: <WaterDown />,
+        NORMAL: <Water />,
+        HIGH: <WaterUp />
     }
 
-    return (
-        <div className='flex items-center gap-5'>
-            {imageMap[level]}
-        </div>
-    );
+    if (level === 'LOW') {
+        return (
+            <WaterDown className='w-[42px] h-[42px] stroke-red-500' />
+        )
+    }
+
+    if (level === 'NORMAL') {
+        return (
+            <Water className='w-[42px] h-[42px] stroke-primary' />
+        )
+    }
+
+    if (level === 'HIGH') {
+        return (
+            <WaterUp className='w-[42px] h-[42px] stroke-green-500' />
+        )
+    }
 };
 
 interface TemperatureLevelProps {
@@ -50,7 +61,7 @@ const TemperatureLevel: React.FC<TemperatureLevelProps> = ({ temperature }) => {
     );
 };
 
-const poolingInterval = 1000;
+const poolingInterval = 60 * 1000;
 
 const Info: React.FC = () => {
     const [info, setInfo] = React.useState<any>(null);
@@ -60,6 +71,8 @@ const Info: React.FC = () => {
             const data = await getInfo();
             setInfo(data);
         };
+
+        fetchInfo();
 
         const interval = setInterval(fetchInfo, poolingInterval);
 
