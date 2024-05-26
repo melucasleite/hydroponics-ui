@@ -23,7 +23,7 @@ const SchedulesTable: React.FC<SchedulesTableProps> = ({ schedules }) => {
     return (
         <div>
             {schedules.map((schedule) => (
-                <div key={schedule.id} className=' border-2 border-white p-2'>
+                <div key={schedule.id}>
                     <table>
                         <thead>
                             <tr>
@@ -37,19 +37,19 @@ const SchedulesTable: React.FC<SchedulesTableProps> = ({ schedules }) => {
                             <tr>
                                 <td className='p-2 text-center'>Part A</td>
                                 {schedule.weeklyParts.map((part) => (
-                                    <td className={"text-center border-2 border-white"} key={"a" + part.id}>{part.partA.toFixed(2)}</td>
+                                    <td className={"text-center border border-white"} key={"a" + part.id}>{part.partA.toFixed(2)}</td>
                                 ))}
                             </tr>
                             <tr>
                                 <td className='p-2 text-center'>Part B</td>
                                 {schedule.weeklyParts.map((part) => (
-                                    <td className={"text-center border-2 border-white"} key={"b" + part.id}>{part.partB.toFixed(2)}</td>
+                                    <td className={"text-center border border-white"} key={"b" + part.id}>{part.partB.toFixed(2)}</td>
                                 ))}
                             </tr>
                             <tr>
                                 <td className='p-2 text-center'>Part C</td>
                                 {schedule.weeklyParts.map((part) => (
-                                    <td className={"text-center border-2 border-white"} key={"c" + part.id}>{part.partC.toFixed(2)}</td>
+                                    <td className={"text-center border border-white"} key={"c" + part.id}>{part.partC.toFixed(2)}</td>
                                 ))}
                             </tr>
                         </tbody>

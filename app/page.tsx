@@ -78,7 +78,12 @@ const Info: React.FC = () => {
     }, []);
 
     if (!info) {
-        return <p>Loading...</p>;
+        return (
+            <div className='w-full flex items-center justify-center h-52'>
+                <p><span className="loading loading-ring loading-lg"></span>
+                </p>
+            </div>
+        )
     }
 
     const { waterLevel, temperature } = info;
@@ -87,12 +92,15 @@ const Info: React.FC = () => {
         <div>
             <div className='space space-y-5'>
                 <div className="flex gap-5">
-                    <Card title='Nutrient Container' className="w-full">
-                        <div className='flex gap-5'>
-                            <Water level={waterLevel} />
-                            <Temperature temperature={temperature} />
+                    <div className="w-full card lg:w-96 bg-base-100 shadow-xl">
+                        <div className="card-body">
+                            <h2 className="card-title">Nutrient container</h2>
+                            <div className='flex items-center gap-5'>
+                                <Water level={waterLevel} />
+                                <Temperature temperature={temperature} />
+                            </div>
                         </div>
-                    </Card>
+                    </div>
                 </div>
                 <div className="collapse collapse-arrow border border-base-300 bg-base-200">
                     <input type="checkbox" />

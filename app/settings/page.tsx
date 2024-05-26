@@ -7,9 +7,9 @@ const Settings: React.FC = async () => {
   const settings = await getSettings();
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl mb-4">Settings</h1>
-      <div className='border-2 rounded border-white p-5'>
+    <div className="card w-full bg-base-100 shadow-xl">
+      <div className="card-body">
+        <h2 className="card-title">Settings</h2>
         <SettingsTable settings={settings} />
       </div>
     </div>
