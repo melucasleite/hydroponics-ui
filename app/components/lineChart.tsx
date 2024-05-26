@@ -14,6 +14,7 @@ interface ILineChart {
 
 export const LineChart: FC<ILineChart> = ({ data, min, max, valueFormater, tooltipFooter }) => (
     <Line data={data} options={{
+        maintainAspectRatio: false,
         scales: {
             y: {
                 min, max, ticks: {

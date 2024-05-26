@@ -72,8 +72,8 @@ const HistoryChart: FC<IHistoryChart> = ({ poolingInterval }) => {
         }
     }
     return (
-        <div className="mt-2">
-            <div className="flex gap-2 mb-2">
+        <div className="mt-2 h-[50rem]">
+            <div className="flex gap-1 mb-2 overflow-x-scroll">
                 {granularityList.map((g) => (
                     <button
                         key={g}
@@ -83,14 +83,18 @@ const HistoryChart: FC<IHistoryChart> = ({ poolingInterval }) => {
                         {g}
                     </button>
                 ))}
-                <select className="p-2 border-2 rounded bg-black" onChange={(e) => setWindow(e.target.value)}   >
-                    {validWindows[granularity].map((w) => (
-                        <option key={w} value={w} selected={w === window}>{w}</option>
-                    ))}
-                </select>
             </div>
-            <LineChart data={temperatureData} min={lowTemp} max={highTemp} valueFormater={(value) => `${value}C`} tooltipFooter={tooltipFooter} />
-            <LineChart data={phData} min={lowPh} max={highPh} valueFormater={(value) => `${value}`} tooltipFooter={tooltipFooter} />
+            <select className="px-2 border-2 rounded bg-black" onChange={(e) => setWindow(e.target.value)}   >
+                {validWindows[granularity].map((w) => (
+                    <option key={w} value={w} selected={w === window}>{w}</option>
+                ))}
+            </select>
+            <div className="h-1/2 pb-5 pt-5">
+                <LineChart data={temperatureData} min={lowTemp} max={highTemp} valueFormater={(value) => `${value}C`} tooltipFooter={tooltipFooter} />
+            </div>
+            <div className="h-1/2 pb-12">
+                <LineChart data={phData} min={lowPh} max={highPh} valueFormater={(value) => `${value}`} tooltipFooter={tooltipFooter} />
+            </div>
         </div>
     );
 };

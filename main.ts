@@ -51,8 +51,10 @@ const readAndInsert = (data: string) => {
     const temperatureRaw = readings.find((reading) => reading.port === 'T1')?.value;
     const phRaw = readings.find((reading) => reading.port === 'A1')?.value;
     const waterSensorA0 = readings.find((reading) => reading.port === 'A0')?.value;
-    if (temperatureRaw !== undefined && phRaw !== undefined && waterSensorA0 !== undefined)
+    if (temperatureRaw !== undefined && phRaw !== undefined && waterSensorA0 !== undefined) {
         insertReading(temperatureRaw / 10, convertToVolts(phRaw), convertToVolts(waterSensorA0));
+        updateInfo(temperatureRaw / 10)
+    }
     else
         console.error('Invalid readings');
 }
@@ -77,6 +79,25 @@ async function insertReading(temperature: number, ph: number, waterSensorA0: num
         } else {
             console.error('Failed to insert reading:', error);
         }
+    }
+}
+
+async function updateInfo(temperature: number) {
+    console.log('Updating info:', { temperature });
+    try {
+        const info = await prisma.info.findFirst();
+        if (info) {
+            await prisma.info.update({
+                where: { id: info.id },
+                data: {
+                    temperature
+                }
+            });
+        } else {
+            console.error('Info not found');
+        }
+    } catch (error) {
+        console.error('Failed to update info:', error);
     }
 }
 

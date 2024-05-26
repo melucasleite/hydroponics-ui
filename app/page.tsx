@@ -25,7 +25,7 @@ const Water: React.FC<WaterLevelProps> = ({ level }) => {
     }
     const Icon = level === 'LOW' ? WaterDownIcon : level === 'NORMAL' ? WaterIcon : WaterUpIcon;
     return (
-        <div className={`tooltip tooltip-right`} data-tip={level === 'LOW' ? "Water is low" : level === 'NORMAL' ? "Water is on optimal levels" : "Water is on its max level"}>
+        <div className={`tooltip tooltip-right`} data-tip={level === 'LOW' ? "Water is low" : level === 'NORMAL' ? "Water is on optimal levels" : "Water is on it's max level"}>
             <Icon className={`w-[42px] h-[42px] stroke-2 ${color[level]}`} />
         </div>
     )
@@ -57,7 +57,7 @@ const Temperature: React.FC<TemperatureLevelProps> = ({ temperature }) => {
     );
 };
 
-const poolingInterval = 60 * 1000;
+const poolingInterval = 1000;
 
 const Info: React.FC = () => {
     const [info, setInfo] = React.useState<any>(null);
@@ -90,13 +90,21 @@ const Info: React.FC = () => {
                     <Card title='Nutrient Container' className="w-full">
                         <div className='flex gap-5'>
                             <Water level={waterLevel} />
-                            <Temperature temperature={40} />
+                            <Temperature temperature={temperature} />
                         </div>
                     </Card>
                 </div>
-                <Card title='History Chart'>
-                    <HistoryChart poolingInterval={poolingInterval} />
-                </Card>
+                <div className="collapse collapse-arrow border border-base-300 bg-base-200">
+                    <input type="checkbox" />
+                    <div className="collapse-title text-xl font-medium">
+                        History
+                    </div>
+                    <div className="collapse-content p-0">
+                        <div className='p-5'>
+                            <HistoryChart poolingInterval={poolingInterval} />
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );
