@@ -3,8 +3,9 @@ import { PrismaClient } from '@prisma/client';
 import logger from '@/logger';
 
 export async function downsampleReadings(prisma: PrismaClient) {
-  const taskLogger = logger.with({ cronJob: 'downsampleReadings' });
-  taskLogger.info('started');
+  const logLabel = { task: 'downsampleReadings' }
+
+  logger.info('started', logLabel);
 
   const twoDaysAgo = new Date();
   twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
@@ -26,7 +27,7 @@ export async function downsampleReadings(prisma: PrismaClient) {
   GROUP BY date_trunc('hour', timestamp)
 `, twoDaysAgo);
 
-  taskLogger.info(`Found ${readingsToKeep.length} readings to keep.`);
+  logger.info(`Found ${readingsToKeep.length} readings to keep.`, logLabel);
 
   // Update the readings
   for (const reading of readingsToKeep) {
@@ -38,11 +39,11 @@ export async function downsampleReadings(prisma: PrismaClient) {
       },
     });
 
-    taskLogger.info(`Updated reading with id ${reading.min_id}.`);
+    logger.info(`Updated reading with id ${reading.min_id}.`, logLabel);
   }
 
-  taskLogger.info('Finished updating readings.');
-  taskLogger.info('Deleting old readings...');
+  logger.info('Finished updating readings.', logLabel);
+  logger.info('Deleting old readings...', logLabel);
 
   // log how many readings are being deleted
   const rowCount = await prisma.$executeRawUnsafe(`
@@ -57,9 +58,9 @@ export async function downsampleReadings(prisma: PrismaClient) {
       WHERE timestamp <= $1 AND id NOT IN (SELECT min_id FROM readings_to_keep);
     `, twoDaysAgo);
 
-  taskLogger.info(`Deleted ${rowCount} readings.`, { deletedRows: rowCount });
+  logger.info(`Deleted ${rowCount} readings.`, { ...logLabel, rowCount });
 
-  taskLogger.info('Finished.');
+  logger.info('Finished.', logLabel);
 
-  await taskLogger.flush();
+  await logger.flush();
 }
