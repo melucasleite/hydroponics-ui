@@ -4,9 +4,12 @@ import React, { HtmlHTMLAttributes, ReactNode } from 'react';
 import { getInfo } from '@/app/utils';
 import { HistoryChart } from '@/app/components/history';
 import { Card } from '@/app/components/card';
-import Water from '@/public/water.svg'
-import WaterUp from '@/public/water-up.svg'
-import WaterDown from '@/public/water-down.svg'
+import WaterIcon from '@/public/water.svg'
+import WaterUpIcon from '@/public/water-up.svg'
+import WaterDownIcon from '@/public/water-down.svg'
+import TemperatureIcon from '@/public/temperature.svg'
+import TemperatureSnowIcon from '@/public/temperature-snow.svg'
+import TemperatureSunIcon from '@/public/temperature-sun.svg'
 import { Info as IInfo } from '@prisma/client';
 
 
@@ -14,49 +17,42 @@ interface WaterLevelProps {
     level: IInfo['waterLevel'];
 }
 
-const WaterLevel: React.FC<WaterLevelProps> = ({ level }) => {
-    const ImageMap = {
-        LOW: <WaterDown />,
-        NORMAL: <Water />,
-        HIGH: <WaterUp />
+const Water: React.FC<WaterLevelProps> = ({ level }) => {
+    const color = {
+        LOW: 'stroke-red-500',
+        NORMAL: 'stroke-primary',
+        HIGH: 'stroke-green-500'
     }
-
-    if (level === 'LOW') {
-        return (
-            <WaterDown className='w-[42px] h-[42px] stroke-red-500' />
-        )
-    }
-
-    if (level === 'NORMAL') {
-        return (
-            <Water className='w-[42px] h-[42px] stroke-primary' />
-        )
-    }
-
-    if (level === 'HIGH') {
-        return (
-            <WaterUp className='w-[42px] h-[42px] stroke-green-500' />
-        )
-    }
+    const Icon = level === 'LOW' ? WaterDownIcon : level === 'NORMAL' ? WaterIcon : WaterUpIcon;
+    return (
+        <div className={`tooltip tooltip-right`} data-tip={level === 'LOW' ? "Water is low" : level === 'NORMAL' ? "Water is on optimal levels" : "Water is on its max level"}>
+            <Icon className={`w-[42px] h-[42px] stroke-2 ${color[level]}`} />
+        </div>
+    )
 };
 
 interface TemperatureLevelProps {
     temperature: number;
 }
 
-const TemperatureLevel: React.FC<TemperatureLevelProps> = ({ temperature }) => {
-    let color = 'rounded border-2 border-green-500';
-    if (temperature < 25) {
-        color = 'rounded border-2 border-blue-500';
-    } else if (temperature > 35) {
-        color = 'rounded border-2 border-danger';
-    } else {
-        color = 'rounded border-2 border-green-500'
+const Temperature: React.FC<TemperatureLevelProps> = ({ temperature }) => {
+    const tempInF = Math.round((temperature * 9 / 5) + 32);
+
+    const tempLevel = tempInF < 60 ? 'low' : tempInF > 90 ? 'high' : 'normal';
+
+    const color = {
+        low: 'fill-blue-200',
+        normal: 'fill-primary',
+        high: 'fill-red-500'
     }
 
+    const Icon = tempLevel === 'low' ? TemperatureSnowIcon : tempLevel === 'normal' ? TemperatureIcon : TemperatureSunIcon;
+
     return (
-        <div className={`flex-1 p-4 ${color}`}>
-            <p>{temperature < 25 ? 'Low' : temperature > 35 ? 'High' : 'Normal'}</p>
+        <div className={`flex items-center`}>
+            <div className='tooltip tooltip-right' data-tip={`${tempInF} F`}>
+                <Icon className={`w-[42px] h-[42px] ${color[tempLevel]}`} />
+            </div>
         </div>
     );
 };
@@ -91,11 +87,11 @@ const Info: React.FC = () => {
         <div>
             <div className='space space-y-5'>
                 <div className="flex gap-5">
-                    <Card title='Water Level' className="w-1/2">
-                        <WaterLevel level={waterLevel} />
-                    </Card>
-                    <Card title='Temperature' className="w-1/2">
-                        <TemperatureLevel temperature={temperature} />
+                    <Card title='Nutrient Container' className="w-full">
+                        <div className='flex gap-5'>
+                            <Water level={waterLevel} />
+                            <Temperature temperature={40} />
+                        </div>
                     </Card>
                 </div>
                 <Card title='History Chart'>
