@@ -58,7 +58,7 @@ export async function downsampleReadings(prisma: PrismaClient) {
       WHERE timestamp <= $1 AND id NOT IN (SELECT min_id FROM readings_to_keep);
     `, twoDaysAgo);
 
-  logger.info(`Deleted ${rowCount} readings.`, { ...logLabel, rowCount });
+  logger.info(`Deleted ${rowCount} readings.`, { ...logLabel, deletedRows: rowCount });
 
   logger.info('Finished.', logLabel);
 
