@@ -16,12 +16,14 @@ datasource db {
 model Info {
   id          Int     @id @default(autoincrement())
   temperature Decimal @db.Decimal(5, 2)
-  lowWaterA   Boolean
-  lowWaterB   Boolean
-  lowWaterC   Boolean
-  lowWaterD   Boolean
+  waterLevel  WaterLevel
 }
 
+enum WaterLevel {
+  LOW
+  NORMAL
+  HIGH
+}
 model Settings {
   id                  Int @id @default(autoincrement())
   flowRateA           Int

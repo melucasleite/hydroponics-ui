@@ -1,28 +1,39 @@
 "use client"
 import React from 'react';
-import { getInfo } from './utils';
-import HistoryChart from './components/history';
+import Image from 'next/image';
+
+import { getInfo } from '@/app/utils';
+import { HistoryChart } from '@/app/components/history';
+import { Card } from '@/app/components/card';
+import water from '@/public/water.svg'
+import waterUp from '@/public/water-up.svg'
+import waterDown from '@/public/water-down.svg'
+import { Info as IInfo } from '@prisma/client';
+
 
 interface WaterLevelProps {
-    level: boolean;
-    label: string;
+    level: IInfo['waterLevel'];
 }
 
-const WaterLevel: React.FC<WaterLevelProps> = ({ level, label }) => {
+const WaterLevel: React.FC<WaterLevelProps> = ({ level }) => {
+    const imageMap = {
+        LOW: waterDown,
+        NORMAL: water,
+        HIGH: waterUp
+    }
+
     return (
-        <div className={`flex-1 p-4 rounded border-2 ${level ? 'border-danger' : 'border-green-500'}`}>
-            <h2>{label}</h2>
-            <p>{level ? 'Low' : 'Normal'}</p>
+        <div className='flex items-center gap-5'>
+            {imageMap[level]}
         </div>
     );
 };
 
 interface TemperatureLevelProps {
     temperature: number;
-    label: string;
 }
 
-const TemperatureLevel: React.FC<TemperatureLevelProps> = ({ temperature, label }) => {
+const TemperatureLevel: React.FC<TemperatureLevelProps> = ({ temperature }) => {
     let color = 'rounded border-2 border-green-500';
     if (temperature < 25) {
         color = 'rounded border-2 border-blue-500';
@@ -34,7 +45,6 @@ const TemperatureLevel: React.FC<TemperatureLevelProps> = ({ temperature, label 
 
     return (
         <div className={`flex-1 p-4 ${color}`}>
-            <h2>{label}</h2>
             <p>{temperature < 25 ? 'Low' : temperature > 35 ? 'High' : 'Normal'}</p>
         </div>
     );
@@ -62,18 +72,23 @@ const Info: React.FC = () => {
         return <p>Loading...</p>;
     }
 
-    const { lowWaterA, lowWaterB, lowWaterC, lowWaterD, temperature } = info;
+    const { waterLevel, temperature } = info;
 
     return (
         <div>
-            <div className="flex flex-wrap gap-2 text-center">
-                <WaterLevel level={lowWaterA} label="Water Level A" />
-                <WaterLevel level={lowWaterB} label="Water Level B" />
-                <WaterLevel level={lowWaterC} label="Water Level C" />
-                <WaterLevel level={lowWaterD} label="Water Level D" />
-                <TemperatureLevel temperature={temperature} label={`Temperature: ${temperature}°C`} />
+            <div className='space space-y-5'>
+                <div className="flex gap-5">
+                    <Card title='Water Level' className="w-1/2">
+                        <WaterLevel level={waterLevel} />
+                    </Card>
+                    <Card title='Temperature' className="w-1/2">
+                        <TemperatureLevel temperature={temperature} />
+                    </Card>
+                </div>
+                <Card title='History Chart'>
+                    <HistoryChart poolingInterval={poolingInterval} />
+                </Card>
             </div>
-            <HistoryChart poolingInterval={poolingInterval} />
         </div>
     );
 };

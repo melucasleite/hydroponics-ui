@@ -122,7 +122,7 @@ const findFirstOrCreateInfo = async () => {
     const found = await prisma.info.findFirst();
     if (!found) {
         const info = await prisma.info.create({
-            data: { lowWaterA: false, lowWaterB: false, lowWaterC: false, lowWaterD: false, temperature: -1.0 }
+            data: { temperature: -1.0, waterLevel: "NORMAL" }
         })
         return { ...info, temperature: toFloat(info.temperature) };
     }
