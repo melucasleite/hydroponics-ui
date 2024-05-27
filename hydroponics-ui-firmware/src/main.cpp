@@ -1,6 +1,6 @@
 #include "inputs.h"
 #include "relayControl.h"
-#include "ioControl.h"
+#include "IOControl.h"
 
 void setup() {
   initRelayControl();
