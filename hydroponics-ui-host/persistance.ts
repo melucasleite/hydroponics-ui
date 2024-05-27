@@ -12,7 +12,6 @@ export async function insertReading(
       data: {
         temperature,
         ph,
-        waterSensorA0: waterLevel,
       },
     });
   } catch (error) {
