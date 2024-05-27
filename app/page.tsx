@@ -36,9 +36,7 @@ interface TemperatureLevelProps {
 }
 
 const Temperature: React.FC<TemperatureLevelProps> = ({ temperature }) => {
-    const tempInF = Math.round((temperature * 9 / 5) + 32);
-
-    const tempLevel = tempInF < 60 ? 'low' : tempInF > 90 ? 'high' : 'normal';
+    const tempLevel = temperature < 60 ? 'low' : temperature > 90 ? 'high' : 'normal';
 
     const color = {
         low: 'fill-blue-200',
@@ -50,7 +48,7 @@ const Temperature: React.FC<TemperatureLevelProps> = ({ temperature }) => {
 
     return (
         <div className={`flex items-center`}>
-            <div className='tooltip tooltip-right' data-tip={`${tempInF} F`}>
+            <div className='tooltip tooltip-right' data-tip={`${temperature} F`}>
                 <Icon className={`w-[42px] h-[42px] ${color[tempLevel]}`} />
             </div>
         </div>

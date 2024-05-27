@@ -90,7 +90,7 @@ const HistoryChart: FC<IHistoryChart> = ({ poolingInterval }) => {
                 ))}
             </select>
             <div className="h-1/2 pb-5 pt-5">
-                <LineChart data={temperatureData} min={lowTemp} max={highTemp} valueFormater={(value) => `${value}C`} tooltipFooter={tooltipFooter} />
+                <LineChart data={temperatureData} valueFormater={(value) => `${value}C`} tooltipFooter={tooltipFooter} />
             </div>
             <div className="h-1/2 pb-12">
                 <LineChart data={phData} min={lowPh} max={highPh} valueFormater={(value) => `${value}`} tooltipFooter={tooltipFooter} />

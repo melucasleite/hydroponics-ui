@@ -6,8 +6,8 @@ Chart.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointEle
 
 interface ILineChart {
     data: any;
-    min: number;
-    max: number;
+    min?: number;
+    max?: number;
     valueFormater: (value: string | number) => string;
     tooltipFooter: (this: TooltipModel<"line">, tooltipItems: TooltipItem<"line">[]) => string | void | string[];
 }
