@@ -7,7 +7,7 @@ import {
 } from "./arduinoComn";
 
 const setup = async () => {
-  initSerial({ onData: insertReading });
+  await initSerial({ onData: insertReading });
   setInterval(() => {
     requestReadings();
   }, 1000);
