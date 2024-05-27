@@ -17,6 +17,26 @@ model Info {
   id          Int     @id @default(autoincrement())
   temperature Decimal @db.Decimal(5, 2)
   waterLevel  WaterLevel
+  K1          Boolean @default(false)
+  K2          Boolean @default(false)
+  K3          Boolean @default(false)
+  K4          Boolean @default(false)
+  K5          Boolean @default(false)
+  K6          Boolean @default(false)
+  K7          Boolean @default(false)
+  K8          Boolean @default(false)
+  K9          Boolean @default(false)
+  K10         Boolean @default(false)
+  K1pin       Int     @default(0)
+  K2pin       Int     @default(0)
+  K3pin       Int     @default(0)
+  K4pin       Int     @default(0)
+  K5pin       Int     @default(0)
+  K6pin       Int     @default(0)
+  K7pin       Int     @default(0)
+  K8pin       Int     @default(0)
+  K9pin       Int     @default(0)
+  K10pin      Int     @default(0)
 }
 
 enum WaterLevel {
