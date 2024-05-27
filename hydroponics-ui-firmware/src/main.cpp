@@ -22,6 +22,7 @@ void setup()
 
 void loop()
 {
+  sensors.requestTemperatures();
   if (Serial.available() > 0)
   {
     String command = Serial.readStringUntil('\n');
@@ -39,9 +40,20 @@ void loop()
         }
       }
       sensors.requestTemperatures();
-      float tempC = sensors.getTempCByIndex(0);
-      readings += "-T1V" + String(int(tempC * 10)) + "\n";
-      Serial.print(readings);
+      float tempF = sensors.getTempFByIndex(0);
+      if (tempF == DEVICE_DISCONNECTED_F)
+      {
+        for (int retry = 0; retry < 5; retry++)
+        {
+          delay(10);
+          sensors.requestTemperatures();
+          tempF = sensors.getTempFByIndex(0);
+          if (tempF != DEVICE_DISCONNECTED_F)
+            break;
+          tempF = 0;
+        }
+      }
+      readings += "-T1V" + String(int(tempF * 10)) + "\n";
     }
     else if (command.startsWith("U"))
     {
