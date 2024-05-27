@@ -11,7 +11,7 @@ void IOControlLoop() {
         String command = Serial.readStringUntil('\n');
         command.trim();
         if (command == "analog") {
-            Serial.println(getInputs());
+            Serial.print(getInputs());
         }
         else if (command.startsWith("R")) {
             // it gets a command on the format R1U2D3U4D5 and then turns on or off the relays accordingly
