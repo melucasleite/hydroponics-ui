@@ -12,7 +12,7 @@ const setup = async () => {
     requestReadings();
   }, 1000);
   setInterval(() => {
-    getInfoAndSendRelays();
+    // getInfoAndSendRelays();
   }, 1000);
 };
 
