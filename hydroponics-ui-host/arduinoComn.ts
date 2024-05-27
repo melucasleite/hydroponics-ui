@@ -92,8 +92,8 @@ export const formatToTwoNumbersString = (value: number) => {
 
 function parseArduinoRawData(data: string): ArduinoReading[] {
   const readings = data
-    .split(",")
-    .map((reading) => reading.split(":"))
+    .split("-")
+    .map((reading) => reading.split("V"))
     .map(([port, value]) => ({ port, value: parseInt(value) }));
   return readings;
 }
