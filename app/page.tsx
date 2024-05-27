@@ -1,59 +1,10 @@
 "use client"
-import React, { HtmlHTMLAttributes, ReactNode } from 'react';
+import React from 'react';
 
-import { getInfo } from '@/app/utils';
-import { HistoryChart } from '@/app/components/history';
-import { Card } from '@/app/components/card';
-import WaterIcon from '@/public/water.svg'
-import WaterUpIcon from '@/public/water-up.svg'
-import WaterDownIcon from '@/public/water-down.svg'
-import TemperatureIcon from '@/public/temperature.svg'
-import TemperatureSnowIcon from '@/public/temperature-snow.svg'
-import TemperatureSunIcon from '@/public/temperature-sun.svg'
-import { Info as IInfo } from '@prisma/client';
-
-
-interface WaterLevelProps {
-    level: IInfo['waterLevel'];
-}
-
-const Water: React.FC<WaterLevelProps> = ({ level }) => {
-    const color = {
-        LOW: 'stroke-red-500',
-        NORMAL: 'stroke-primary',
-        HIGH: 'stroke-green-500'
-    }
-    const Icon = level === 'LOW' ? WaterDownIcon : level === 'NORMAL' ? WaterIcon : WaterUpIcon;
-    return (
-        <div className={`tooltip tooltip-right`} data-tip={level === 'LOW' ? "Water is low" : level === 'NORMAL' ? "Water is on optimal levels" : "Water is on it's max level"}>
-            <Icon className={`w-[42px] h-[42px] stroke-2 ${color[level]}`} />
-        </div>
-    )
-};
-
-interface TemperatureLevelProps {
-    temperature: number;
-}
-
-const Temperature: React.FC<TemperatureLevelProps> = ({ temperature }) => {
-    const tempLevel = temperature < 60 ? 'low' : temperature > 90 ? 'high' : 'normal';
-
-    const color = {
-        low: 'fill-blue-200',
-        normal: 'fill-primary',
-        high: 'fill-red-500'
-    }
-
-    const Icon = tempLevel === 'low' ? TemperatureSnowIcon : tempLevel === 'normal' ? TemperatureIcon : TemperatureSunIcon;
-
-    return (
-        <div className={`flex items-center`}>
-            <div className='tooltip tooltip-right' data-tip={`${temperature} F`}>
-                <Icon className={`w-[42px] h-[42px] ${color[tempLevel]}`} />
-            </div>
-        </div>
-    );
-};
+import { getInfo } from './utils';
+import { HistoryChart } from './components/dashboard/HistoryChart';
+import { Water } from './components/dashboard/Water';
+import { Temperature } from './components/dashboard/Temperature';
 
 const poolingInterval = 1000;
 
