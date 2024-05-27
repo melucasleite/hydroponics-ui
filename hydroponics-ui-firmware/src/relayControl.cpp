@@ -1,7 +1,7 @@
 #include "relayControl.h"
 
 unsigned long lastUpTime[53]; // Array to store the last time a "U" command was received for each pin
-bool debug = true; // Debug variable
+bool debug = false;
 
 unsigned int delayTime = 5000;
 
