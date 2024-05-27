@@ -19,7 +19,7 @@ const setup = async () => {
 export const getInfoAndSendRelays = async () => {
   const info = await getInfo();
   const relayConfig = getRelayConfig(info);
-  console.log("Relay config:", relayConfig);
+  //   console.log("Relay config:", relayConfig);
   sendRelays(relayConfig);
 };
 

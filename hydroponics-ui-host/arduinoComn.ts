@@ -35,6 +35,7 @@ export async function initSerial({ onData }: IInitSerial) {
     console.log("Received data:", data);
     const readings: ArduinoReading[] = parseArduinoRawData(data);
     const parsedReadings: ArduinoParsedReading = parseArduinoReadings(readings);
+    console.log(parsedReadings);
     onData(parsedReadings);
   });
 }
@@ -62,7 +63,7 @@ export const requestReadings = () => {
 
 export const sendRelays = (relays: { port: string; status: boolean }[]) => {
   const relaysString = relays
-    .map(({ port, status }) => `${port}:${status ? "U" : "D"}`)
+    .map(({ port, status }) => `${port}${status ? "U" : "D"}`)
     .join("");
   console.log("Sending relays:", `R${relaysString}\n`);
   port.write(`R${relaysString}\n`);
