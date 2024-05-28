@@ -91,7 +91,6 @@ function parseArduinoReadings(data: ArduinoPortReading[]): ArduinoReading {
   const temperatureRaw = data.find((reading) => reading.port === "T1")?.value;
   const phRaw = data.find((reading) => reading.port === "A1")?.value;
   if (temperatureRaw === undefined || phRaw === undefined) {
-    console.log(data);
     throw new Error("Invalid readings");
   }
   return {

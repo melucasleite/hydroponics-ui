@@ -15,7 +15,7 @@ export async function insertReading(
     });
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError && retryCount > 0) {
-      console.log(
+      console.error(
         `Error inserting reading. Retrying... (${retryCount} attempts left)`
       );
       await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -27,7 +27,6 @@ export async function insertReading(
 }
 
 export async function updateCurrentState(reading: ArduinoReading) {
-  console.log("Updating CurrentState:", reading);
   const obj = await prisma.currentState.findFirst();
   if (!obj) {
     throw new Error("CurrentState not found");
@@ -43,7 +42,6 @@ export async function updateCurrentState(reading: ArduinoReading) {
 }
 
 export async function getCurrentState(): Promise<CurrentState> {
-  console.log("Getting CurrentState");
   const obj = await prisma.currentState.findFirst();
   if (obj === null) {
     throw new Error("CurrentState not found");
@@ -52,7 +50,6 @@ export async function getCurrentState(): Promise<CurrentState> {
 }
 
 export async function getRelays(): Promise<Relay> {
-  console.log("Getting Relays");
   const obj = await prisma.relay.findFirst();
   if (obj === null) {
     throw new Error("Relays not found");
