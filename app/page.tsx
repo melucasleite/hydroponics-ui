@@ -83,7 +83,7 @@ const Info: React.FC = () => {
               </div>
             </div>
           )}
-          {recommendations && (
+          {!isLoadingRecommendations && recommendations && (
             <div className="w-full card lg:w-1/3 bg-base-100 shadow-xl">
               <div className="card-body">
                 <h2 className="card-title">AI Recommendations</h2>
