@@ -1,32 +1,34 @@
 "use client"
 import React from 'react';
 
-import { getInfo } from './utils';
+import { getCurrentState } from './utils';
 import { HistoryChart } from './components/dashboard/HistoryChart';
 import { Water } from './components/dashboard/Water';
 import { Temperature } from './components/dashboard/Temperature';
+import { PH } from './components/dashboard/PH';
+import { Nutrient } from './components/dashboard/Nutrient';
 
 const poolingInterval = 1000;
 
 const Info: React.FC = () => {
-    const [info, setInfo] = React.useState<any>(null);
+    const [currentState, setCurrentState] = React.useState<any>(null);
 
     React.useEffect(() => {
-        const fetchInfo = async () => {
-            const data = await getInfo();
-            setInfo(data);
+        const fetchCurrentState = async () => {
+            const data = await getCurrentState();
+            setCurrentState(data);
         };
 
-        fetchInfo();
+        fetchCurrentState();
 
-        const interval = setInterval(fetchInfo, poolingInterval);
+        const interval = setInterval(fetchCurrentState, poolingInterval);
 
         return () => {
             clearInterval(interval);
         };
     }, []);
 
-    if (!info) {
+    if (!currentState) {
         return (
             <div className='w-full flex items-center justify-center h-52'>
                 <p><span className="loading loading-ring loading-lg"></span>
@@ -35,7 +37,7 @@ const Info: React.FC = () => {
         )
     }
 
-    const { waterLevel, temperature } = info;
+    const { waterLevel, temperature, ec, ph } = currentState;
 
     return (
         <div>
@@ -47,6 +49,8 @@ const Info: React.FC = () => {
                             <div className='flex items-center gap-5'>
                                 <Water level={waterLevel} />
                                 <Temperature temperature={temperature} />
+                                <Nutrient ec={ec} />
+                                <PH ph={ph} />
                             </div>
                         </div>
                     </div>

@@ -1,61 +1,65 @@
-'use server'
+"use server";
 import { Settings } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import { revalidatePath } from "next/cache";
 import { cache } from "react";
-import _ from "lodash"
+import _ from "lodash";
 import { validWindows } from "./constants";
 import prisma from "@/client";
 
 export const getSettings = cache(async () => {
-    return findFirstOrCreateSettings();
-})
+  return findFirstOrCreateSettings();
+});
 
 export const getSchedules = cache(async () => {
-    const schedules = await prisma.schedule.findMany({
-        include: { weeklyParts: true }
-    });
-    return schedules.map((schedule) => {
-        return {
-            ...schedule, weeklyParts: schedule.weeklyParts.map((part) => ({
-                ...part,
-                partA: toFloat(part.partA),
-                partB: toFloat(part.partB),
-                partC: toFloat(part.partC)
-            }))
-        }
-    });
-})
+  const schedules = await prisma.schedule.findMany({
+    include: { weeklyParts: true },
+  });
+  return schedules.map((schedule) => {
+    return {
+      ...schedule,
+      weeklyParts: schedule.weeklyParts.map((part) => ({
+        ...part,
+        partA: toFloat(part.partA),
+        partB: toFloat(part.partB),
+        partC: toFloat(part.partC),
+      })),
+    };
+  });
+});
 
 export const addSchedule = async (data: any) => {
-    const schedule = await prisma.schedule.create({
-        data: {
-            weeklyParts: { create: data.weeklyParts }
-        }
-    });
-    revalidatePath('/schedules')
-    return schedule;
-}
+  const schedule = await prisma.schedule.create({
+    data: {
+      weeklyParts: { create: data.weeklyParts },
+    },
+  });
+  revalidatePath("/schedules");
+  return schedule;
+};
 
 export const deleteSchedule = async (id: number) => {
-    await prisma.schedule.delete({
-        where: { id }
-    });
-    revalidatePath('/schedules')
-}
+  await prisma.schedule.delete({
+    where: { id },
+  });
+  revalidatePath("/schedules");
+};
 
-export type Granularity = 'second' | 'minute' | 'hour' | 'day';
+export type Granularity = "second" | "minute" | "hour" | "day";
 
-export const getReadings = cache(async (granularity: Granularity, window: string) => {
+export const getReadings = cache(
+  async (granularity: Granularity, window: string) => {
     type QueryResult = {
-        interval: Date;
-        reading_count: number;
-        avg_temperature: Decimal | null;
-        avg_ph: Decimal | null;
+      interval: Date;
+      reading_count: number;
+      avg_temperature: Decimal | null;
+      avg_ph: Decimal | null;
     };
 
     if (validWindows[granularity].indexOf(window) === -1) {
-        throw new Error(`Invalid window for granularity ${granularity}: ${window}`);
+      throw new Error(
+        `Invalid window for granularity ${granularity}: ${window}`
+      );
     }
 
     const result: QueryResult[] = await prisma.$queryRawUnsafe(`
@@ -80,55 +84,73 @@ export const getReadings = cache(async (granularity: Granularity, window: string
         ORDER BY 
             intervals.interval DESC;
     `);
-    return result.map((reading) => {
+    return result
+      .map((reading) => {
         return {
-            reading_count: reading.reading_count,
-            interval: reading.interval,
-            temperature: reading.avg_temperature ? toFloat(reading.avg_temperature) : null,
-            ph: reading.avg_ph ? toFloat(reading.avg_ph) : null
+          reading_count: reading.reading_count,
+          interval: reading.interval,
+          temperature: reading.avg_temperature
+            ? toFloat(reading.avg_temperature)
+            : null,
+          ph: reading.avg_ph ? toFloat(reading.avg_ph) : null,
         };
-    }
-    ).reverse();
-});
+      })
+      .reverse();
+  }
+);
 
-export const getInfo = cache(async () => {
-    return findFirstOrCreateInfo();
+export const getCurrentState = cache(async () => {
+  return toFloats(await findFirstOrCreateCurrentState());
 });
-
 
 export const saveSettings = async (data: Settings) => {
-    await findFirstOrCreateSettings();
-    const updatedSettings = await prisma.settings.update({
-        where: { id: data.id },
-        data
-    });
-    revalidatePath('/settings')
-    return updatedSettings;
-}
-
+  await findFirstOrCreateSettings();
+  const updatedSettings = await prisma.settings.update({
+    where: { id: data.id },
+    data,
+  });
+  revalidatePath("/settings");
+  return updatedSettings;
+};
 
 const findFirstOrCreateSettings = async () => {
-    const found = await prisma.settings.findFirst();
-    if (!found) {
-        const newSettings = await prisma.settings.create({
-            data: { flowRateA: 0, flowRateB: 0, flowRateC: 0, flowRateD: 0, mainVolumeContainer: 0 }
-        })
-        return newSettings;
-    }
-    return found
-}
+  const found = await prisma.settings.findFirst();
+  if (!found) {
+    const newSettings = await prisma.settings.create({
+      data: {
+        flowRateA: 0,
+        flowRateB: 0,
+        flowRateC: 0,
+        flowRateD: 0,
+        mainVolumeContainer: 0,
+      },
+    });
+    return newSettings;
+  }
+  return found;
+};
 
-const findFirstOrCreateInfo = async () => {
-    const found = await prisma.info.findFirst();
-    if (!found) {
-        const info = await prisma.info.create({
-            data: { temperature: -1.0, waterLevel: "NORMAL" }
-        })
-        return { ...info, temperature: toFloat(info.temperature) };
-    }
-    return { ...found, temperature: toFloat(found.temperature) }
-}
+const findFirstOrCreateCurrentState = async () => {
+  let obj;
+  obj = await prisma.currentState.findFirst();
+  if (!obj) {
+    obj = await prisma.currentState.create({
+      data: { temperature: -1.0, waterLevel: "NORMAL", ph: -1.0, ec: -1.0 },
+    });
+  }
+  return obj;
+};
 
 const toFloat = (value: Decimal) => {
-    return parseFloat(value.toFixed(2));
-}
+  return parseFloat(value.toFixed(2));
+};
+
+// takes an object and for everyValue that it's Decimal apply the toFloat function
+export const toFloats = (obj: any) => {
+  return _.mapValues(obj, (value) => {
+    if (value instanceof Decimal) {
+      return toFloat(value);
+    }
+    return value;
+  });
+};
