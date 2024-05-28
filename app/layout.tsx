@@ -4,7 +4,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import PageLayout from "./components/pageLayout";
-import { AxiomWebVitals } from 'next-axiom';
+import { AxiomWebVitals } from "next-axiom";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,15 +19,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider appearance={{
-      baseTheme: dark
-    }}>
+    <ClerkProvider
+      appearance={{
+        baseTheme: dark,
+      }}
+    >
       <html lang="en">
         <AxiomWebVitals />
         <body className={inter.className}>
-          <PageLayout>
-            {children}
-          </PageLayout>
+          <PageLayout>{children}</PageLayout>
         </body>
       </html>
     </ClerkProvider>

@@ -56,7 +56,7 @@ export async function getRecommendedCare({
   const prompt = `
   Plant variant: ${plantName}\nEC: ${ec}\nWater Level: ${waterLevel}\nTemperature: ${temperature}\npH: ${ph}\n Stage: ${stage}\n\n.
   Given these parameters, the plants are growing hydroponically and the ideal parameters: ${JSON.stringify(
-    idealParameters[plantName][stage]
+    idealParameters[plantName][stage],
   )},
   for each one of "Temperature, PH, and EC" what needs to be changed?
   Have a honest but encouring tone, let them know how their plants are doing in relation to what they are providing them with.
@@ -84,7 +84,7 @@ export async function getRecommendedCare({
   console.log(response);
 
   return parseRecommendations(
-    response.choices[0].message.content ?? "No recommendations found."
+    response.choices[0].message.content ?? "No recommendations found.",
   );
 }
 

@@ -28,7 +28,7 @@ interface IHistoryChart {
 const HistoryChart: FC<IHistoryChart> = ({ poolingInterval }) => {
   const [readings, setReadings] = React.useState<ParsedReading[]>([]);
   const [granularity, setGranularity] = React.useState<Granularity>(
-    granularityList[0]
+    granularityList[0],
   );
   const [window, setWindow] = React.useState(validWindows[granularity][0]); // Default to the first window in the list
   const granularityRef = React.useRef(granularity);
@@ -69,7 +69,7 @@ const HistoryChart: FC<IHistoryChart> = ({ poolingInterval }) => {
     readings.map((reading) => reading.temperature),
     lowTemp,
     highTemp,
-    readings.map((reading) => reading.interval.toLocaleString())
+    readings.map((reading) => reading.interval.toLocaleString()),
   );
 
   const phData = getChartData(
@@ -77,12 +77,12 @@ const HistoryChart: FC<IHistoryChart> = ({ poolingInterval }) => {
     readings.map((reading) => reading.ph),
     lowPh,
     highPh,
-    readings.map((reading) => reading.interval.toLocaleTimeString())
+    readings.map((reading) => reading.interval.toLocaleTimeString()),
   );
 
   function tooltipFooter(
     this: TooltipModel<"line">,
-    tooltipItems: TooltipItem<"line">[]
+    tooltipItems: TooltipItem<"line">[],
   ): string | void | string[] {
     const item = tooltipItems[0];
     if (item) {

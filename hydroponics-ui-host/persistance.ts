@@ -4,7 +4,7 @@ import { CurrentState, Relay } from "@prisma/client";
 
 export async function insertReading(
   { temperature, waterLevel, ph },
-  retryCount = 10
+  retryCount = 10,
 ): Promise<void> {
   try {
     await prisma.reading.create({
@@ -16,7 +16,7 @@ export async function insertReading(
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError && retryCount > 0) {
       console.error(
-        `Error inserting reading. Retrying... (${retryCount} attempts left)`
+        `Error inserting reading. Retrying... (${retryCount} attempts left)`,
       );
       await new Promise((resolve) => setTimeout(resolve, 2000));
       await insertReading({ temperature, waterLevel, ph }, retryCount - 1);

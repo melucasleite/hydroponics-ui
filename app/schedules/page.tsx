@@ -1,7 +1,7 @@
-import React from 'react';
-import SchedulesTable from './schedulesTable';
-import AddSchedule from './addSchedule';
-import { getSchedules } from '../utils';
+import React from "react";
+import SchedulesTable from "./schedulesTable";
+import AddSchedule from "./addSchedule";
+import { getSchedules } from "../utils";
 
 const Schedules: React.FC = async () => {
   const schedules = await getSchedules();

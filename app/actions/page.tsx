@@ -1,6 +1,6 @@
-import React from 'react';
-import { getSchedules, getSettings } from '../utils';
-import { FeedingChart } from './FeedingChart';
+import React from "react";
+import { getSchedules, getSettings } from "../utils";
+import { FeedingChart } from "./FeedingChart";
 
 const Actions: React.FC = async () => {
   const schedules = await getSchedules();
@@ -8,14 +8,27 @@ const Actions: React.FC = async () => {
 
   const actions = schedules.map((schedule) => {
     return {
-      ...schedule, weeklyParts: schedule.weeklyParts.map((part) => ({
+      ...schedule,
+      weeklyParts: schedule.weeklyParts.map((part) => ({
         volumeA: (part.partA * settings.mainVolumeContainer).toFixed(1) + "ml",
-        runA: ((part.partA * settings.mainVolumeContainer) / (settings.flowRateA / 60)).toFixed(1) + "s",
+        runA:
+          (
+            (part.partA * settings.mainVolumeContainer) /
+            (settings.flowRateA / 60)
+          ).toFixed(1) + "s",
         volumeB: (part.partB * settings.mainVolumeContainer).toFixed(1) + "ml",
-        runB: ((part.partB * settings.mainVolumeContainer) / (settings.flowRateB / 60)).toFixed(1) + "s",
+        runB:
+          (
+            (part.partB * settings.mainVolumeContainer) /
+            (settings.flowRateB / 60)
+          ).toFixed(1) + "s",
         volumeC: (part.partC * settings.mainVolumeContainer).toFixed(1) + "ml",
-        runC: ((part.partC * settings.mainVolumeContainer) / (settings.flowRateC / 60)).toFixed(1) + "s"
-      }))
+        runC:
+          (
+            (part.partC * settings.mainVolumeContainer) /
+            (settings.flowRateC / 60)
+          ).toFixed(1) + "s",
+      })),
     };
   });
 
@@ -33,7 +46,7 @@ const Actions: React.FC = async () => {
             </tr>
           </thead>
           <tbody>
-            {actions.map((action, index) => (
+            {actions.map((action, index) =>
               action.weeklyParts.map((part, partIndex) => (
                 <tr key={`${index}-${partIndex}`}>
                   <td className="py-2 px-4 border-b">{partIndex + 1}</td>
@@ -41,19 +54,59 @@ const Actions: React.FC = async () => {
                   <td className="py-2 px-4 border-b">{part.volumeB}</td>
                   <td className="py-2 px-4 border-b">{part.volumeC}</td>
                 </tr>
-              ))
-            ))}
+              )),
+            )}
             <tr>
               <td className="py-2 px-4 border-b">Total</td>
-              <td className="py-2 px-4 border-b">{actions.reduce((total, action) => total + action.weeklyParts.reduce((partTotal, part) => partTotal + parseFloat(part.volumeA), 0), 0).toFixed(1)}ml</td>
-              <td className="py-2 px-4 border-b">{actions.reduce((total, action) => total + action.weeklyParts.reduce((partTotal, part) => partTotal + parseFloat(part.volumeB), 0), 0).toFixed(1)}ml</td>
-              <td className="py-2 px-4 border-b">{actions.reduce((total, action) => total + action.weeklyParts.reduce((partTotal, part) => partTotal + parseFloat(part.volumeC), 0), 0).toFixed(1)}ml</td>
+              <td className="py-2 px-4 border-b">
+                {actions
+                  .reduce(
+                    (total, action) =>
+                      total +
+                      action.weeklyParts.reduce(
+                        (partTotal, part) =>
+                          partTotal + parseFloat(part.volumeA),
+                        0,
+                      ),
+                    0,
+                  )
+                  .toFixed(1)}
+                ml
+              </td>
+              <td className="py-2 px-4 border-b">
+                {actions
+                  .reduce(
+                    (total, action) =>
+                      total +
+                      action.weeklyParts.reduce(
+                        (partTotal, part) =>
+                          partTotal + parseFloat(part.volumeB),
+                        0,
+                      ),
+                    0,
+                  )
+                  .toFixed(1)}
+                ml
+              </td>
+              <td className="py-2 px-4 border-b">
+                {actions
+                  .reduce(
+                    (total, action) =>
+                      total +
+                      action.weeklyParts.reduce(
+                        (partTotal, part) =>
+                          partTotal + parseFloat(part.volumeC),
+                        0,
+                      ),
+                    0,
+                  )
+                  .toFixed(1)}
+                ml
+              </td>
             </tr>
           </tbody>
         </table>
-        {actions && actions.length > 0 && (
-          <FeedingChart action={actions[0]} />
-        )}
+        {actions && actions.length > 0 && <FeedingChart action={actions[0]} />}
       </div>
     </div>
   );

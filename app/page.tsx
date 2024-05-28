@@ -24,7 +24,7 @@ type CurrentState = {
 
 const Info: React.FC = () => {
   const [currentState, setCurrentState] = React.useState<CurrentState | null>(
-    null
+    null,
   );
   React.useEffect(() => {
     const fetchCurrentState = async () => {
@@ -147,7 +147,7 @@ export default Info;
 const useRecommendations = (
   currentState: CurrentState | null,
   plantName: "tomatoes",
-  stage: "vegetative" | "flowering" | "seedling"
+  stage: "vegetative" | "flowering" | "seedling",
 ) => {
   const [isLoading, setIsLoading] = React.useState(true);
   const [recommendations, setRecommendations] =

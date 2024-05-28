@@ -58,7 +58,7 @@ export const getReadings = cache(
 
     if (validWindows[granularity].indexOf(window) === -1) {
       throw new Error(
-        `Invalid window for granularity ${granularity}: ${window}`
+        `Invalid window for granularity ${granularity}: ${window}`,
       );
     }
 
@@ -96,7 +96,7 @@ export const getReadings = cache(
         };
       })
       .reverse();
-  }
+  },
 );
 
 export const getCurrentState = cache(async () => {

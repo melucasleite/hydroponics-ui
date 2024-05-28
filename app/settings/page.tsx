@@ -1,7 +1,7 @@
 // app/settings.tsx
-import React from 'react';
-import SettingsTable from './table';
-import { getSettings } from '../utils';
+import React from "react";
+import SettingsTable from "./table";
+import { getSettings } from "../utils";
 
 const Settings: React.FC = async () => {
   const settings = await getSettings();

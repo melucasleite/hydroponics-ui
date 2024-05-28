@@ -1,11 +1,11 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
-import logger from '@/logger';
+import logger from "@/logger";
 
 export async function downsampleReadings(prisma: PrismaClient) {
-  const logLabel = { task: 'downsampleReadings' }
+  const logLabel = { task: "downsampleReadings" };
 
-  logger.info('started', logLabel);
+  logger.info("started", logLabel);
 
   const twoDaysAgo = new Date();
   twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
@@ -16,7 +16,8 @@ export async function downsampleReadings(prisma: PrismaClient) {
     avg_temperature: number;
     avg_ph: number;
     min_id: number;
-  }[] = await prisma.$queryRawUnsafe(`
+  }[] = await prisma.$queryRawUnsafe(
+    `
   SELECT 
     date_trunc('hour', timestamp) as hour,
     AVG(temperature) as avg_temperature,
@@ -25,7 +26,9 @@ export async function downsampleReadings(prisma: PrismaClient) {
   FROM "Reading"
   WHERE timestamp <= $1
   GROUP BY date_trunc('hour', timestamp)
-`, twoDaysAgo);
+`,
+    twoDaysAgo,
+  );
 
   logger.info(`Found ${readingsToKeep.length} readings to keep.`, logLabel);
 
@@ -42,11 +45,12 @@ export async function downsampleReadings(prisma: PrismaClient) {
     logger.info(`Updated reading with id ${reading.min_id}.`, logLabel);
   }
 
-  logger.info('Finished updating readings.', logLabel);
-  logger.info('Deleting old readings...', logLabel);
+  logger.info("Finished updating readings.", logLabel);
+  logger.info("Deleting old readings...", logLabel);
 
   // log how many readings are being deleted
-  const rowCount = await prisma.$executeRawUnsafe(`
+  const rowCount = await prisma.$executeRawUnsafe(
+    `
       WITH readings_to_keep AS (
         SELECT 
           MIN(id) as min_id
@@ -56,11 +60,16 @@ export async function downsampleReadings(prisma: PrismaClient) {
       )
       DELETE FROM "Reading"
       WHERE timestamp <= $1 AND id NOT IN (SELECT min_id FROM readings_to_keep);
-    `, twoDaysAgo);
+    `,
+    twoDaysAgo,
+  );
 
-  logger.info(`Deleted ${rowCount} readings.`, { ...logLabel, deletedRows: rowCount });
+  logger.info(`Deleted ${rowCount} readings.`, {
+    ...logLabel,
+    deletedRows: rowCount,
+  });
 
-  logger.info('Finished.', logLabel);
+  logger.info("Finished.", logLabel);
 
   await logger.flush();
 }

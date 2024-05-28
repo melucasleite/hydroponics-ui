@@ -1,5 +1,5 @@
 import type { Config } from "tailwindcss";
-import daisyui from "daisyui"
+import daisyui from "daisyui";
 
 const config: Config = {
   content: [
@@ -11,7 +11,7 @@ const config: Config = {
     extend: {
       colors: {
         primary: "rgba(30,142,255)",
-        danger: "rgba(255,0,0,1)"
+        danger: "rgba(255,0,0,1)",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
@@ -20,9 +20,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [
-    daisyui,
-  ],
+  plugins: [daisyui],
 };
 
 export default config;
