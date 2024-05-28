@@ -1,8 +1,6 @@
 "use client";
 import React from 'react';
-import TemperatureIcon from '@/public/temperature.svg';
-import TemperatureSnowIcon from '@/public/temperature-snow.svg';
-import TemperatureSunIcon from '@/public/temperature-sun.svg';
+import LeafIcon from '@/public/leaf.svg';
 
 interface NutrientProps {
     ec: number;
@@ -16,7 +14,7 @@ export const Nutrient: React.FC<NutrientProps> = ({ ec }) => {
         high: 'fill-red-500'
     };
 
-    const Icon = ecLevel === 'low' ? TemperatureSnowIcon : ecLevel === 'normal' ? TemperatureIcon : TemperatureSunIcon;
+    const Icon = LeafIcon;
 
     return (
         <div className={`flex items-center`}>

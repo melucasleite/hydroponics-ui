@@ -1,7 +1,5 @@
 import React from 'react';
-import TemperatureIcon from '@/public/temperature.svg';
-import TemperatureSnowIcon from '@/public/temperature-snow.svg';
-import TemperatureSunIcon from '@/public/temperature-sun.svg';
+import AcidIcon from '@/public/acid.svg';
 
 interface PHProps {
     ph: number;
@@ -15,7 +13,7 @@ export const PH: React.FC<PHProps> = ({ ph }) => {
         high: 'fill-red-500'
     };
 
-    const Icon = phLevel === 'low' ? TemperatureSnowIcon : phLevel === 'normal' ? TemperatureIcon : TemperatureSunIcon;
+    const Icon = AcidIcon
 
     return (
         <div className={`flex items-center`}>
