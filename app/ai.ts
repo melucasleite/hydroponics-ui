@@ -56,7 +56,7 @@ export async function getRecommendedCare({
   const prompt = `Plant variant: ${plantName}\nEC: ${ec}\nWater Level: ${waterLevel}\nTemperature: ${temperature}\npH: ${ph}\n Stage: ${stage}\n\n. Given these parameters, the plants are growing hydroponically and the ${JSON.stringify(
     idealParameters[plantName][stage]
   )} for each one of "Temperature, PH, and EC" what needs to be changed? Reply in a very short summarized message if we need to make any changes to any of the parameter EC, Water Level, PH and Temperature, to the recommended levels. Be strict with the proper range these plants are very important. Don't format the output but add a '<new line>' between each parameter. Have a honest but encouring tone, let them know how their plants are doing in relation to what they are providing them with. Output the message in the format
-  {ph}your recommendation{end}{ec}your recommendation{end}{temperature}your recommendation{end}{water}your recommendation{end}{encouragement}your encouragement{end}. If no changes needed for a parameter omit it in the output.`;
+  {ph}your recommendation{end}{ec}your recommendation{end}{temperature}your recommendation{end}{water}your recommendation{end}{encouragement}your encouragement{end}. If no changes needed for a parameter omit it in the output. If no changes needed at all just output the encouragement message.`;
   console.log(prompt);
   const response = await openai.chat.completions.create({
     model: "gpt-4o",
@@ -78,11 +78,11 @@ export async function getRecommendedCare({
 
 function parseRecommendations(recommendations: string): Recommendation {
   const regex = /{(\w+)}(.*?){end}/g;
-  const matches = [...recommendations.matchAll(regex)];
+  const matches = Array.from(recommendations.matchAll(regex));
   console.log(matches);
-  return matches.reduce((acc, match) => {
+  return matches.reduce((acc: any, match) => {
     const [, key, value] = match;
     acc[key] = value;
     return acc;
-  }, {});
+  }, {}) as any;
 }
