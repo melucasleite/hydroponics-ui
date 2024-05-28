@@ -24,7 +24,6 @@ export async function initSerial({ onData }: IInitSerial) {
     console.log("Received data:", data);
     const readings: ArduinoPortReading[] = parseArduinoRawData(data);
     const parsedReadings: ArduinoReading = parseArduinoReadings(readings);
-    console.log(parsedReadings);
     onData(parsedReadings);
   });
 }
