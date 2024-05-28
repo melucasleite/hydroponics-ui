@@ -13,10 +13,16 @@ datasource db {
   url      = env("DATABASE_PRISMA_URL")
 }
 
-model Info {
+model CurrentState {
   id          Int     @id @default(autoincrement())
   temperature Decimal @db.Decimal(5, 2)
+  ph          Decimal @db.Decimal(5, 2)
+  ec          Decimal @db.Decimal(5, 2)
   waterLevel  WaterLevel
+}
+
+model Relay {
+  id          Int     @id @default(autoincrement())
   K1          Boolean @default(false)
   K2          Boolean @default(false)
   K3          Boolean @default(false)

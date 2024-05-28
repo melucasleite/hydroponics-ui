@@ -1,26 +1,26 @@
-import { getInfo, insertReading } from "./persistance";
-import {
-  getRelayConfig,
-  initSerial,
-  requestReadings,
-  sendRelays,
-} from "./arduinoComn";
+import * as Repo from "./persistance";
+import * as ArduinoController from "./arduinoComn";
 
 const setup = async () => {
-  await initSerial({ onData: insertReading });
+  await ArduinoController.initSerial({
+    onData: (reading) => {
+      Repo.insertReading(reading);
+      Repo.updateCurrentState(reading);
+    },
+  });
   setInterval(() => {
-    requestReadings();
+    ArduinoController.requestReadings();
   }, 1000);
   setInterval(() => {
-    // getInfoAndSendRelays();
+    getRelaysAndSend();
   }, 1000);
 };
 
-export const getInfoAndSendRelays = async () => {
-  const info = await getInfo();
-  const relayConfig = getRelayConfig(info);
-  //   console.log("Relay config:", relayConfig);
-  sendRelays(relayConfig);
+export const getRelaysAndSend = async () => {
+  const relays = await Repo.getRelays();
+  const relayConfig = ArduinoController.getRelayConfig(relays);
+  console.log("Relay config:", relayConfig);
+  ArduinoController.sendRelays(relayConfig);
 };
 
 await setup();

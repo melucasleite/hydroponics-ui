@@ -1,22 +1,11 @@
-import { Info } from "@prisma/client";
+import { Relay } from "@prisma/client";
 import { ReadlineParser, SerialPort } from "serialport";
 import { convertToVolts } from "./utils";
 
 let port;
 
-type ArduinoParsedReading = {
-  temperature: number;
-  ph: number;
-  waterLevel: "low" | "normal" | "high";
-};
-
-type ArduinoReading = {
-  port: string;
-  value: number;
-};
-
 interface IInitSerial {
-  onData: (data: ArduinoParsedReading) => void;
+  onData: (data: ArduinoReading) => void;
 }
 
 export async function initSerial({ onData }: IInitSerial) {
@@ -33,8 +22,8 @@ export async function initSerial({ onData }: IInitSerial) {
 
   parser.on("data", (data: string) => {
     console.log("Received data:", data);
-    const readings: ArduinoReading[] = parseArduinoRawData(data);
-    const parsedReadings: ArduinoParsedReading = parseArduinoReadings(readings);
+    const readings: ArduinoPortReading[] = parseArduinoRawData(data);
+    const parsedReadings: ArduinoReading = parseArduinoReadings(readings);
     console.log(parsedReadings);
     onData(parsedReadings);
   });
@@ -69,18 +58,18 @@ export const sendRelays = (relays: { port: string; status: boolean }[]) => {
   port.write(`R${relaysString}\n`);
 };
 
-export function getRelayConfig(info: Info) {
+export function getRelayConfig(relay: Relay) {
   const relayConfig: { port: string; status: boolean }[] = [
-    { port: formatToTwoNumbersString(info.K1pin), status: info.K1 },
-    { port: formatToTwoNumbersString(info.K2pin), status: info.K2 },
-    { port: formatToTwoNumbersString(info.K3pin), status: info.K3 },
-    { port: formatToTwoNumbersString(info.K4pin), status: info.K4 },
-    { port: formatToTwoNumbersString(info.K5pin), status: info.K5 },
-    { port: formatToTwoNumbersString(info.K6pin), status: info.K6 },
-    { port: formatToTwoNumbersString(info.K7pin), status: info.K7 },
-    { port: formatToTwoNumbersString(info.K8pin), status: info.K8 },
-    { port: formatToTwoNumbersString(info.K9pin), status: info.K9 },
-    { port: formatToTwoNumbersString(info.K10pin), status: info.K10 },
+    { port: formatToTwoNumbersString(relay.K1pin), status: relay.K1 },
+    { port: formatToTwoNumbersString(relay.K2pin), status: relay.K2 },
+    { port: formatToTwoNumbersString(relay.K3pin), status: relay.K3 },
+    { port: formatToTwoNumbersString(relay.K4pin), status: relay.K4 },
+    { port: formatToTwoNumbersString(relay.K5pin), status: relay.K5 },
+    { port: formatToTwoNumbersString(relay.K6pin), status: relay.K6 },
+    { port: formatToTwoNumbersString(relay.K7pin), status: relay.K7 },
+    { port: formatToTwoNumbersString(relay.K8pin), status: relay.K8 },
+    { port: formatToTwoNumbersString(relay.K9pin), status: relay.K9 },
+    { port: formatToTwoNumbersString(relay.K10pin), status: relay.K10 },
   ];
   return relayConfig;
 }
@@ -90,7 +79,7 @@ export const formatToTwoNumbersString = (value: number) => {
   return value.toString().padStart(2, "0");
 };
 
-function parseArduinoRawData(data: string): ArduinoReading[] {
+function parseArduinoRawData(data: string): ArduinoPortReading[] {
   const readings = data
     .split("-")
     .map((reading) => reading.split("V"))
@@ -98,7 +87,7 @@ function parseArduinoRawData(data: string): ArduinoReading[] {
   return readings;
 }
 
-function parseArduinoReadings(data: ArduinoReading[]): ArduinoParsedReading {
+function parseArduinoReadings(data: ArduinoPortReading[]): ArduinoReading {
   const temperatureRaw = data.find((reading) => reading.port === "T1")?.value;
   const phRaw = data.find((reading) => reading.port === "A1")?.value;
   if (temperatureRaw === undefined || phRaw === undefined) {
@@ -108,6 +97,7 @@ function parseArduinoReadings(data: ArduinoReading[]): ArduinoParsedReading {
   return {
     temperature: temperatureRaw / 10,
     ph: convertToVolts(phRaw),
-    waterLevel: "normal",
+    ec: 1.2,
+    waterLevel: "NORMAL",
   };
 }

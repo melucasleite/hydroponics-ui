@@ -1,6 +1,6 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import prisma from "../client";
-import { Info } from "@prisma/client";
+import { CurrentState, Relay } from "@prisma/client";
 
 export async function insertReading(
   { temperature, waterLevel, ph },
@@ -27,31 +27,38 @@ export async function insertReading(
   }
 }
 
-export async function updateInfo(temperature: number) {
-  console.log("Updating info:", { temperature });
-  try {
-    const info = await prisma.info.findFirst();
-    if (info) {
-      await prisma.info.update({
-        where: { id: info.id },
-        data: {
-          temperature,
-        },
-      });
-    } else {
-      console.error("Info not found");
-    }
-  } catch (error) {
-    console.error("Failed to update info:", error);
+export async function updateCurrentState(reading: ArduinoReading) {
+  console.log("Updating CurrentState:", reading);
+  const obj = await prisma.currentState.findFirst();
+  if (!obj) {
+    throw new Error("CurrentState not found");
   }
+  await prisma.currentState.update({
+    where: { id: obj.id },
+    data: {
+      temperature: reading.temperature,
+      ph: reading.ph,
+      waterLevel: reading.waterLevel,
+    },
+  });
 }
 
-export async function getInfo(): Promise<Info> {
-  console.log("Getting info");
-  const info = await prisma.info.findFirst();
-  if (info === null) {
-    throw new Error("Info not found");
+export async function getCurrentState(): Promise<CurrentState> {
+  console.log("Getting CurrentState");
+  const obj = await prisma.currentState.findFirst();
+  if (obj === null) {
+    throw new Error("CurrentState not found");
   }
-  console.log("Got info:", info);
-  return info;
+  console.log("Got CurrentState:", obj);
+  return obj;
+}
+
+export async function getRelays(): Promise<Relay> {
+  console.log("Getting Relays");
+  const obj = await prisma.relay.findFirst();
+  if (obj === null) {
+    throw new Error("Relays not found");
+  }
+  console.log("Got Relays:", obj);
+  return obj;
 }
