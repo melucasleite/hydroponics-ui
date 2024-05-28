@@ -6,7 +6,6 @@ export async function insertReading(
   { temperature, waterLevel, ph },
   retryCount = 10
 ): Promise<void> {
-  console.log("Inserting reading:", { temperature, ph });
   try {
     await prisma.reading.create({
       data: {
@@ -49,7 +48,6 @@ export async function getCurrentState(): Promise<CurrentState> {
   if (obj === null) {
     throw new Error("CurrentState not found");
   }
-  console.log("Got CurrentState:", obj);
   return obj;
 }
 
@@ -59,6 +57,5 @@ export async function getRelays(): Promise<Relay> {
   if (obj === null) {
     throw new Error("Relays not found");
   }
-  console.log("Got Relays:", obj);
   return obj;
 }

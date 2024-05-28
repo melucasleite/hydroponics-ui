@@ -19,7 +19,6 @@ const setup = async () => {
 export const getRelaysAndSend = async () => {
   const relays = await Repo.getRelays();
   const relayConfig = ArduinoController.getRelayConfig(relays);
-  console.log("Relay config:", relayConfig);
   ArduinoController.sendRelays(relayConfig);
 };
 

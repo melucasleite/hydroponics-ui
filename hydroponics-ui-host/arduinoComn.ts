@@ -46,7 +46,7 @@ export async function detectArduinoMega(): Promise<string | undefined> {
 }
 
 export const requestReadings = () => {
-  console.log("Requesting readings...");
+  console.log("Requesting readings.");
   port.write("analog\n");
 };
 
