@@ -18,8 +18,9 @@ export const Nutrient: React.FC<NutrientProps> = ({ ec }) => {
 
     return (
         <div className={`flex items-center`}>
-            <div className='tooltip tooltip-right' data-tip={`${ec} ec`}>
+            <div className='tooltip tooltip-right' data-tip={`EC: ${ec}`}>
                 <Icon className={`w-[42px] h-[42px] ${color[ecLevel]}`} />
+                <p>{ec}</p>
             </div>
         </div>
     );

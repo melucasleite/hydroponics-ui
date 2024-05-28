@@ -17,8 +17,9 @@ export const PH: React.FC<PHProps> = ({ ph }) => {
 
     return (
         <div className={`flex items-center`}>
-            <div className='tooltip tooltip-right' data-tip={`${ph} ph`}>
+            <div className='tooltip tooltip-right' data-tip={`PH: ${ph}`}>
                 <Icon className={`w-[42px] h-[42px] ${color[phLevel]}`} />
+                <p>{ph}</p>
             </div>
         </div>
     );

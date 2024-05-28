@@ -100,7 +100,13 @@ export const getReadings = cache(
 );
 
 export const getCurrentState = cache(async () => {
-  return toFloats(await findFirstOrCreateCurrentState());
+  const currentState = await findFirstOrCreateCurrentState();
+  return {
+    temperature: toFloat(currentState.temperature),
+    waterLevel: currentState.waterLevel,
+    ph: toFloat(currentState.ph),
+    ec: toFloat(currentState.ec),
+  };
 });
 
 export const saveSettings = async (data: Settings) => {
@@ -143,14 +149,4 @@ const findFirstOrCreateCurrentState = async () => {
 
 const toFloat = (value: Decimal) => {
   return parseFloat(value.toFixed(2));
-};
-
-// takes an object and for everyValue that it's Decimal apply the toFloat function
-export const toFloats = (obj: any) => {
-  return _.mapValues(obj, (value) => {
-    if (value instanceof Decimal) {
-      return toFloat(value);
-    }
-    return value;
-  });
 };

@@ -22,6 +22,7 @@ export const Temperature: React.FC<TemperatureLevelProps> = ({ temperature }) =>
         <div className={`flex items-center`}>
             <div className='tooltip tooltip-right' data-tip={`${temperature} F`}>
                 <Icon className={`w-[42px] h-[42px] ${color[tempLevel]}`} />
+                <p>{temperature} F</p>
             </div>
         </div>
     );

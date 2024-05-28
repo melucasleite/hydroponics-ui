@@ -19,6 +19,7 @@ export const Water: React.FC<WaterLevelProps> = ({ level }) => {
     return (
         <div className={`tooltip tooltip-right`} data-tip={level === 'LOW' ? "Water is low" : level === 'NORMAL' ? "Water is on optimal levels" : "Water is on it's max level"}>
             <Icon className={`w-[42px] h-[42px] stroke-2 ${color[level]}`} />
+            <p>{level}</p>
         </div>
     );
 };
