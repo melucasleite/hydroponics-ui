@@ -37,6 +37,7 @@ export async function updateCurrentState(reading: ArduinoReading) {
       temperature: reading.temperature,
       ph: reading.ph,
       waterLevel: reading.waterLevel,
+      ec: reading.ec,
     },
   });
 }
