@@ -3,10 +3,10 @@ import React from 'react';
 import WaterIcon from '@/public/water.svg';
 import WaterUpIcon from '@/public/water-up.svg';
 import WaterDownIcon from '@/public/water-down.svg';
-import { Info } from '@prisma/client';
+import { CurrentState } from '@prisma/client';
 
 export interface WaterLevelProps {
-    level: Info['waterLevel'];
+    level: CurrentState['waterLevel'];
 }
 
 export const Water: React.FC<WaterLevelProps> = ({ level }) => {
